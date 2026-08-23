@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,9 +17,9 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-      -name: Set Android SDK location
-          run: echo
-          "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+
+      - name: Set Android SDK location
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
