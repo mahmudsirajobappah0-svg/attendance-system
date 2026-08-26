@@ -8,6 +8,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.attendancesystem2.ui.theme.AttendanceSystem2Theme
 
 class MainActivity : ComponentActivity() {
@@ -23,21 +26,28 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    var isLoggedIn by remember {
-                        mutableStateOf(false)
-                    }
+                    val navController = rememberNavController()
 
-                    if (isLoggedIn) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = "login"
+                    ) {
 
-                        StudentDashboard()
+                        composable("login") {
+                            LoginScreen(
+                                onLogin = {
+                                    navController.navigate("student_dashboard") {
+                                        popUpTo("login") {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
+                        }
 
-                    } else {
-
-                        LoginScreen(
-                            onLogin = {Open student dashboard after successful login
-                                isLoggedIn = true
-                            }
-                        )
+                        composable("student_dashboard") {
+                            StudentDashboard()
+                        }
                     }
                 }
             }
