@@ -1,5 +1,6 @@
 package com.example.attendancesystem2
 
+import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +54,10 @@ fun LoginScreen(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
+
+    val auth = remember {FirebaseAuth.getinstance() }
 
     Box(
         modifier = Modifier
@@ -226,6 +231,20 @@ fun LoginScreen(
                         focusedPlaceholderColor = TextGray,
                         unfocusedPlaceholderColor = TextGray
                     )
+                                    if (errorMessage.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = errorMessage,
+                        color = Color(0xFFFF8A8A),
+                        fontSize = 13.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Forgot password
+
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -247,7 +266,31 @@ fun LoginScreen(
 
                 // Login button
                 Button(
-                    onClick = {onLogin()
+                    onClick = {onClick = {
+    if (email.isBlank() || password.isBlank()) {
+        errorMessage = "Please enter your email and password"
+        return@Button
+    }
+
+    isLoading = true
+    errorMessage = ""
+
+    auth.signInWithEmailAndPassword(
+        email.trim(),
+        password
+    ).addOnCompleteListener { task ->
+
+        isLoading = false
+
+        if (task.isSuccessful) {
+            onLogin()
+        } else {
+            errorMessage =
+                task.exception?.message ?: "Login failed. Please try again."
+        }
+    }
+},
+()
                         // Login functionality will be added later
                     },
                     modifier = Modifier
@@ -260,7 +303,7 @@ fun LoginScreen(
                     )
                 ) {
                     Text(
-                        text = "Login  →",
+                        text = if (isLoading) "Signing in..." else "Login  →",
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
                     )
