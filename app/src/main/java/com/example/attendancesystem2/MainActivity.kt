@@ -18,28 +18,26 @@ class MainActivity : ComponentActivity() {
         setContent {
             AttendanceSystem2Theme {
 
-                var currentScreen by remember {
-                    mutableStateOf("login")
-                }
-
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    when (currentScreen) {
+                    var isLoggedIn by remember {
+                        mutableStateOf(false)
+                    }
 
-                        "login" -> {
-                            LoginScreen(
-                                onLogin = {
-                                    currentScreen = "dashboard"
-                                }
-                            )
-                        }
+                    if (isLoggedIn) {
 
-                        "dashboard" -> {
-                            StudentDashboard()
-                        }
+                        StudentDashboard()
+
+                    } else {
+
+                        LoginScreen(
+                            onLogin = {
+                                isLoggedIn = true
+                            }
+                        )
                     }
                 }
             }
