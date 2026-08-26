@@ -47,7 +47,9 @@ private val TextWhite = Color(0xFFF5F5F5)
 private val TextGray = Color(0xFF9BA5B5)
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onLogin: () -> Unit
+) {
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -245,7 +247,7 @@ fun LoginScreen() {
 
                 // Login button
                 Button(
-                    onClick = {
+                    onClick = {onLogin()
                         // Login functionality will be added later
                     },
                     modifier = Modifier
