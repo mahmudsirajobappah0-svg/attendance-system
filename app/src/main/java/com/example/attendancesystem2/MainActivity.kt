@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     } else {
 
                         LoginScreen(
-                            onLogin = {
+                            onLogin = {Open student dashboard after successful login
                                 isLoggedIn = true
                             }
                         )
