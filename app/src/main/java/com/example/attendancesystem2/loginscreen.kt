@@ -1,6 +1,5 @@
 package com.example.attendancesystem2
 
-import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
 
 private val Background = Color(0xFF080D17)
 private val CardColor = Color(0xFF111927)
@@ -51,13 +51,12 @@ private val TextGray = Color(0xFF9BA5B5)
 fun LoginScreen(
     onLogin: () -> Unit
 ) {
-
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    val auth = remember {FirebaseAuth.getinstance() }
+    val auth = remember { FirebaseAuth.getInstance() }
 
     Box(
         modifier = Modifier
@@ -179,7 +178,10 @@ fun LoginScreen(
                 // Email
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        errorMessage = ""
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     label = {
@@ -208,7 +210,10 @@ fun LoginScreen(
                 // Password
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                        errorMessage = ""
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
@@ -231,7 +236,10 @@ fun LoginScreen(
                         focusedPlaceholderColor = TextGray,
                         unfocusedPlaceholderColor = TextGray
                     )
-                                    if (errorMessage.isNotEmpty()) {
+                )
+
+                // Error message
+                if (errorMessage.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
@@ -240,12 +248,6 @@ fun LoginScreen(
                         fontSize = 13.sp
                     )
                 }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Forgot password
-
-                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -266,33 +268,33 @@ fun LoginScreen(
 
                 // Login button
                 Button(
-                    onClick = {onClick = {
-    if (email.isBlank() || password.isBlank()) {
-        errorMessage = "Please enter your email and password"
-        return@Button
-    }
+                    onClick = {
 
-    isLoading = true
-    errorMessage = ""
+                        if (email.isBlank() || password.isBlank()) {
+                            errorMessage = "Please enter your email and password"
+                            return@Button
+                        }
 
-    auth.signInWithEmailAndPassword(
-        email.trim(),
-        password
-    ).addOnCompleteListener { task ->
+                        isLoading = true
+                        errorMessage = ""
 
-        isLoading = false
+                        auth.signInWithEmailAndPassword(
+                            email.trim(),
+                            password
+                        ).addOnCompleteListener { task ->
 
-        if (task.isSuccessful) {
-            onLogin()
-        } else {
-            errorMessage =
-                task.exception?.message ?: "Login failed. Please try again."
-        }
-    }
-},
-()
-                        // Login functionality will be added later
+                            isLoading = false
+
+                            if (task.isSuccessful) {
+                                onLogin()
+                            } else {
+                                errorMessage =
+                                    task.exception?.message
+                                        ?: "Login failed. Please try again."
+                            }
+                        }
                     },
+                    enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
@@ -303,7 +305,11 @@ fun LoginScreen(
                     )
                 ) {
                     Text(
-                        text = if (isLoading) "Signing in..." else "Login  →",
+                        text = if (isLoading) {
+                            "Signing in..."
+                        } else {
+                            "Login  →"
+                        },
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -320,7 +326,9 @@ fun LoginScreen(
                         modifier = Modifier
                             .weight(1f)
                             .height(1.dp)
-                            .background(Color.White.copy(alpha = 0.12f))
+                            .background(
+                                Color.White.copy(alpha = 0.12f)
+                            )
                     )
 
                     Text(
@@ -333,7 +341,9 @@ fun LoginScreen(
                         modifier = Modifier
                             .weight(1f)
                             .height(1.dp)
-                            .background(Color.White.copy(alpha = 0.12f))
+                            .background(
+                                Color.White.copy(alpha = 0.12f)
+                            )
                     )
                 }
 
