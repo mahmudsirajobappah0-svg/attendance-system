@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
 
 private val Background = Color(0xFF080D17)
 private val Card = Color(0xFF111927)
@@ -22,7 +23,9 @@ private val White = Color(0xFFF5F5F5)
 private val Gray = Color(0xFF9BA5B5)
 
 @Composable
-fun StudentDashboard() {
+fun StudentDashboard(
+    onLogout: () -> Unit
+) {
 
     Box(
         modifier = Modifier
@@ -92,7 +95,7 @@ fun StudentDashboard() {
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            // Attendance percentage
+            // Attendance overview
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -175,10 +178,10 @@ fun StudentDashboard() {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Scan QR
+            // Scan QR button
             Button(
                 onClick = {
-                    // QR scanner will be connected later
+                    // QR scanner will be connected next
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -302,6 +305,30 @@ fun StudentDashboard() {
                     title = "Profile",
                     symbol = "●",
                     modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Logout button
+            Button(
+                onClick = {
+                    FirebaseAuth.getInstance().signOut()
+                    onLogout()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(55.dp),
+                shape = RoundedCornerShape(18.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF8B2E2E),
+                    contentColor = White
+                )
+            ) {
+                Text(
+                    text = "Logout",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
