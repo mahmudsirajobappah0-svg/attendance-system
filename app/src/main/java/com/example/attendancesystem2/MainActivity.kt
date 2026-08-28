@@ -3,14 +3,10 @@ package com.example.attendancesystem2
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.attendancesystem2.ui.theme.AttendanceSystem2Theme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
 
@@ -18,46 +14,37 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            AttendanceSystem2Theme {
 
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
+            var currentScreen by mutableStateOf("login")
 
-                    val navController = rememberNavController()
+            when (currentScreen) {
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = "login"
-                    ) {
-
-                        composable("login") {
-                            LoginScreen(
-                                onLogin = {
-                                    navController.navigate("student_dashboard") {
-                                        popUpTo("login") {
-                                            inclusive = true
-                                        }
-                                    }
-                                }
-                            )
+                "login" -> {
+                    LoginScreen(
+                        onLogin = {
+                            currentScreen = "dashboard"
                         }
+                    )
+                }
 
-                        composable("student_dashboard") {
-                          StudentDashboard(
-    onLogout = {
-        FirebaseAuth.getInstance().signOut()
-        // Return to login screen
-    },
-    onScanAttendance = {
-        // Open QR Scanner
-    }
-)
-                                }
-                            )
+                "dashboard" -> {
+                    StudentDashboard(
+                        onLogout = {
+                            FirebaseAuth.getInstance().signOut()
+                            currentScreen = "login"
                         }
-                    }
+                    )
+                }
+
+                "register" -> {
+                    RegisterScreen(
+                        onRegisterSuccess = {
+                            currentScreen = "login"
+                        },
+                        onBackToLogin = {
+                            currentScreen = "login"
+                        }
+                    )
                 }
             }
         }
