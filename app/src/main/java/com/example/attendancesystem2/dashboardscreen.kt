@@ -2,9 +2,24 @@ package com.example.attendancesystem2
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,25 +30,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
 private val DashboardBackground = Color(0xFF080D17)
 private val DashboardCard = Color(0xFF111927)
 private val DashboardGold = Color(0xFFE7B96B)
 private val DashboardText = Color(0xFFF5F5F5)
 private val DashboardGray = Color(0xFF9BA5B5)
 
+
 @Composable
 fun StudentDashboard(
     onLogout: () -> Unit
-) { {
+) {
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    listOf(
+                    colors = listOf(
                         Color(0xFF111A2A),
-                        DashboardBackground
+                        DashboardBackground,
+                        Color(0xFF080C14)
                     )
                 )
             )
@@ -42,6 +60,7 @@ fun StudentDashboard(
 
         Spacer(modifier = Modifier.height(30.dp))
 
+        // Welcome text
         Text(
             text = "Welcome back 👋",
             color = DashboardGray,
@@ -58,6 +77,7 @@ fun StudentDashboard(
         )
 
         Spacer(modifier = Modifier.height(30.dp))
+
 
         // Attendance Status Card
         Card(
@@ -97,7 +117,9 @@ fun StudentDashboard(
             }
         }
 
+
         Spacer(modifier = Modifier.height(20.dp))
+
 
         // Statistics
         Row(
@@ -118,13 +140,15 @@ fun StudentDashboard(
             )
         }
 
+
         Spacer(modifier = Modifier.height(30.dp))
 
-       Button(
-    onClick = onLogout
-) {
-    Text("Logout")
-}
+
+        // Scan Attendance Button
+        Button(
+            onClick = {
+                // QR Scanner will be connected here
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp),
@@ -136,14 +160,40 @@ fun StudentDashboard(
         ) {
 
             Text(
-                text = "Scan Attendance  📷",
+                text = "Scan Attendance 📷",
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold
             )
         }
 
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        // Logout Button
+        OutlinedButton(
+            onClick = onLogout,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+            shape = RoundedCornerShape(18.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = DashboardGold
+            )
+        ) {
+
+            Text(
+                text = "Logout",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+
+
         Spacer(modifier = Modifier.height(30.dp))
 
+
+        // Recent Activity
         Text(
             text = "Recent Activity",
             color = DashboardText,
@@ -153,13 +203,25 @@ fun StudentDashboard(
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        Text(
-            text = "No attendance records yet",
-            color = DashboardGray,
-            fontSize = 14.sp
-        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(DashboardCard)
+                .padding(20.dp),
+            contentAlignment = Alignment.Center
+        ) {
+
+            Text(
+                text = "No attendance records yet",
+                color = DashboardGray,
+                fontSize = 14.sp
+            )
+        }
     }
 }
+
 
 @Composable
 fun DashboardStat(
@@ -173,9 +235,9 @@ fun DashboardStat(
             .clip(RoundedCornerShape(20.dp))
             .background(DashboardCard)
             .border(
-                1.dp,
-                Color.White.copy(alpha = 0.06f),
-                RoundedCornerShape(20.dp)
+                width = 1.dp,
+                color = Color.White.copy(alpha = 0.06f),
+                shape = RoundedCornerShape(20.dp)
             )
             .padding(18.dp)
     ) {
