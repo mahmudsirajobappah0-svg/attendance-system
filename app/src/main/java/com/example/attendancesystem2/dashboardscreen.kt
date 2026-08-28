@@ -8,370 +8,188 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.auth.FirebaseAuth
 
-private val Background = Color(0xFF080D17)
-private val Card = Color(0xFF111927)
-private val Field = Color(0xFF151E2D)
-private val Gold = Color(0xFFE7B96B)
-private val White = Color(0xFFF5F5F5)
-private val Gray = Color(0xFF9BA5B5)
+private val DashboardBackground = Color(0xFF080D17)
+private val DashboardCard = Color(0xFF111927)
+private val DashboardGold = Color(0xFFE7B96B)
+private val DashboardText = Color(0xFFF5F5F5)
+private val DashboardGray = Color(0xFF9BA5B5)
 
 @Composable
-fun StudentDashboard(
-    onLogout: () -> Unit
-) {
+fun StudentDashboard() {
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(
+                    listOf(
                         Color(0xFF111A2A),
-                        Background
+                        DashboardBackground
                     )
                 )
             )
+            .padding(24.dp)
     ) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp)
+        Spacer(modifier = Modifier.height(30.dp))
+
+        Text(
+            text = "Welcome back 👋",
+            color = DashboardGray,
+            fontSize = 16.sp
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = "Student Dashboard",
+            color = DashboardText,
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        // Attendance Status Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = DashboardCard
+            )
         ) {
 
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Column {
-                    Text(
-                        text = "Good morning 👋",
-                        color = Gray,
-                        fontSize = 14.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Text(
-                        text = "Student",
-                        color = White,
-                        fontSize = 28.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .background(
-                            Gold.copy(alpha = 0.15f),
-                            RoundedCornerShape(16.dp)
-                        )
-                        .border(
-                            1.dp,
-                            Gold.copy(alpha = 0.4f),
-                            RoundedCornerShape(16.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "S",
-                        color = Gold,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            // Attendance overview
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFF192437),
-                                Card
-                            )
-                        ),
-                        RoundedCornerShape(26.dp)
-                    )
-                    .border(
-                        1.dp,
-                        Color.White.copy(alpha = 0.08f),
-                        RoundedCornerShape(26.dp)
-                    )
-                    .padding(24.dp)
+                modifier = Modifier.padding(22.dp)
             ) {
 
                 Text(
-                    text = "Attendance overview",
-                    color = Gray,
-                    fontSize = 14.sp
+                    text = "Today's Attendance",
+                    color = DashboardGray,
+                    fontSize = 15.sp
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-
-                    Column {
-                        Text(
-                            text = "87%",
-                            color = Gold,
-                            fontSize = 42.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Text(
-                            text = "Overall attendance",
-                            color = White,
-                            fontSize = 14.sp
-                        )
-                    }
-
-                    Text(
-                        text = "Excellent",
-                        color = Gold,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .background(
-                            Field,
-                            RoundedCornerShape(10.dp)
-                        )
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.87f)
-                            .fillMaxHeight()
-                            .background(
-                                Gold,
-                                RoundedCornerShape(10.dp)
-                            )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Scan QR button
-            Button(
-                onClick = {
-                    // QR scanner will be connected next
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(65.dp),
-                shape = RoundedCornerShape(20.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Gold,
-                    contentColor = Color(0xFF101722)
-                )
-            ) {
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "▣",
-                    fontSize = 24.sp
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Text(
-                    text = "Scan Attendance QR",
-                    fontSize = 17.sp,
+                    text = "Not Marked",
+                    color = DashboardGold,
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Bold
                 )
-            }
 
-            Spacer(modifier = Modifier.height(22.dp))
-
-            Text(
-                text = "Today's attendance",
-                color = White,
-                fontSize = 19.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Today's attendance card
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Card,
-                        RoundedCornerShape(20.dp)
-                    )
-                    .border(
-                        1.dp,
-                        Color.White.copy(alpha = 0.07f),
-                        RoundedCornerShape(20.dp)
-                    )
-                    .padding(18.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .background(
-                            Gold.copy(alpha = 0.12f),
-                            RoundedCornerShape(14.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "✓",
-                        color = Gold,
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(14.dp))
-
-                Column(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        text = "Today's status",
-                        color = White,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Spacer(modifier = Modifier.height(3.dp))
-
-                    Text(
-                        text = "No attendance recorded",
-                        color = Gray,
-                        fontSize = 13.sp
-                    )
-                }
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Pending",
-                    color = Gold,
+                    text = "Scan your lecturer's QR code to mark attendance",
+                    color = DashboardGray,
                     fontSize = 13.sp
                 )
             }
+        }
 
-            Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text = "Quick access",
-                color = White,
-                fontSize = 19.sp,
-                fontWeight = FontWeight.SemiBold
+        // Statistics
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+
+            DashboardStat(
+                title = "Attendance",
+                value = "0%",
+                modifier = Modifier.weight(1f)
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-
-                DashboardButton(
-                    title = "History",
-                    symbol = "◷",
-                    modifier = Modifier.weight(1f)
-                )
-
-                DashboardButton(
-                    title = "Profile",
-                    symbol = "●",
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Logout button
-            Button(
-                onClick = {
-                    FirebaseAuth.getInstance().signOut()
-                    onLogout()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(55.dp),
-                shape = RoundedCornerShape(18.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF8B2E2E),
-                    contentColor = White
-                )
-            ) {
-                Text(
-                    text = "Logout",
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            DashboardStat(
+                title = "Classes",
+                value = "0",
+                modifier = Modifier.weight(1f)
+            )
         }
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        Button(
+            onClick = {
+                // QR Scan navigation comes next
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            shape = RoundedCornerShape(18.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DashboardGold,
+                contentColor = Color(0xFF101722)
+            )
+        ) {
+
+            Text(
+                text = "Scan Attendance  📷",
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Spacer(modifier = Modifier.height(30.dp))
+
+        Text(
+            text = "Recent Activity",
+            color = DashboardText,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(15.dp))
+
+        Text(
+            text = "No attendance records yet",
+            color = DashboardGray,
+            fontSize = 14.sp
+        )
     }
 }
 
 @Composable
-private fun DashboardButton(
+fun DashboardStat(
     title: String,
-    symbol: String,
+    value: String,
     modifier: Modifier = Modifier
 ) {
 
     Column(
         modifier = modifier
-            .height(105.dp)
-            .background(
-                Field,
-                RoundedCornerShape(20.dp)
-            )
+            .clip(RoundedCornerShape(20.dp))
+            .background(DashboardCard)
             .border(
                 1.dp,
-                Color.White.copy(alpha = 0.07f),
+                Color.White.copy(alpha = 0.06f),
                 RoundedCornerShape(20.dp)
             )
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(18.dp)
     ) {
 
         Text(
-            text = symbol,
-            color = Gold,
-            fontSize = 22.sp
+            text = value,
+            color = DashboardGold,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(5.dp))
 
         Text(
             text = title,
-            color = White,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium
+            color = DashboardGray,
+            fontSize = 13.sp
         )
     }
 }
