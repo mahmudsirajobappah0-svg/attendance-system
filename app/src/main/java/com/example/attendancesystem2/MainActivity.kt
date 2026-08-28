@@ -45,13 +45,15 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable("student_dashboard") {
-                            StudentDashboard(
-                                onLogout = {
-                                    navController.navigate("login") {
-                                        popUpTo("student_dashboard") {
-                                            inclusive = true
-                                        }
-                                    }
+                          StudentDashboard(
+    onLogout = {
+        FirebaseAuth.getInstance().signOut()
+        // Return to login screen
+    },
+    onScanAttendance = {
+        // Open QR Scanner
+    }
+)
                                 }
                             )
                         }
