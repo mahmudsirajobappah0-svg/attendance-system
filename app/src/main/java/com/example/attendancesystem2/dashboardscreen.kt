@@ -22,7 +22,9 @@ private val DashboardText = Color(0xFFF5F5F5)
 private val DashboardGray = Color(0xFF9BA5B5)
 
 @Composable
-fun StudentDashboard() {
+fun StudentDashboard(
+    onLogout: () -> Unit
+) { {
 
     Column(
         modifier = Modifier
@@ -118,10 +120,11 @@ fun StudentDashboard() {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        Button(
-            onClick = {
-                // QR Scan navigation comes next
-            },
+       Button(
+    onClick = onLogout
+) {
+    Text("Logout")
+}
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp),
