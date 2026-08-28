@@ -40,7 +40,8 @@ private val DashboardGray = Color(0xFF9BA5B5)
 
 @Composable
 fun StudentDashboard(
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onScanAttendance: () -> Unit
 ) {
 
     Column(
@@ -145,10 +146,9 @@ fun StudentDashboard(
 
 
         // Scan Attendance Button
-        Button(
-            onClick = {
-                // QR Scanner will be connected here
-            },
+       Button(
+    onClick = onScanAttendance,
+           
             modifier = Modifier
                 .fillMaxWidth()
                 .height(60.dp),
