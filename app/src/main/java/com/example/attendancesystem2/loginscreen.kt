@@ -2,35 +2,15 @@ package com.example.attendancesystem2
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -39,33 +19,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 
-private val Background = Color(0xFF080D17)
-private val CardColor = Color(0xFF111927)
-private val FieldColor = Color(0xFF151E2D)
-private val Gold = Color(0xFFE7B96B)
-private val GoldLight = Color(0xFFFFDFA3)
-private val TextWhite = Color(0xFFF5F5F5)
-private val TextGray = Color(0xFF9BA5B5)
-
 @Composable
 fun LoginScreen(
-    onLogin: () -> Unit
+    onLogin: () -> Unit,
+    onRegister: () -> Unit
 ) {
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
-    val auth = remember { FirebaseAuth.getInstance() }
+    val background = Color(0xFF080D17)
+    val cardColor = Color(0xFF111927)
+    val fieldColor = Color(0xFF151E2D)
+    val gold = Color(0xFFE7B96B)
+    val white = Color(0xFFF5F5F5)
+    val gray = Color(0xFF9BA5B5)
+
+    val auth = FirebaseAuth.getInstance()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(
+                    listOf(
                         Color(0xFF111A2A),
-                        Background,
+                        background,
                         Color(0xFF080C14)
                     )
                 )
@@ -76,80 +57,36 @@ fun LoginScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 28.dp),
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-            // Logo
-            Box(
-                modifier = Modifier
-                    .size(92.dp)
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFF182437),
-                                Color(0xFF0E1522)
-                            )
-                        )
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = Gold.copy(alpha = 0.45f),
-                        shape = RoundedCornerShape(28.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "A",
-                    color = GoldLight,
-                    fontSize = 46.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(22.dp))
-
-            // App title
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Attendance",
-                    color = TextWhite,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Light
-                )
-
-                Spacer(modifier = Modifier.width(7.dp))
-
-                Text(
-                    text = "System",
-                    color = Gold,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
+            Text(
+                text = "ATTENDANCE",
+                color = gold,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Smart. Secure. Seamless.",
-                color = TextGray,
-                fontSize = 15.sp,
-                letterSpacing = 1.sp
+                text = "Digital Attendance System",
+                color = gray,
+                fontSize = 15.sp
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(45.dp))
 
-            // Login card
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(28.dp))
-                    .background(CardColor.copy(alpha = 0.92f))
+                    .background(
+                        cardColor,
+                        RoundedCornerShape(28.dp)
+                    )
                     .border(
                         width = 1.dp,
                         color = Color.White.copy(alpha = 0.08f),
@@ -159,23 +96,22 @@ fun LoginScreen(
             ) {
 
                 Text(
-                    text = "Welcome back",
-                    color = TextWhite,
-                    fontSize = 27.sp,
-                    fontWeight = FontWeight.Medium
+                    text = "Welcome Back 👋",
+                    color = white,
+                    fontSize = 25.sp,
+                    fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = "Sign in to continue",
-                    color = TextGray,
-                    fontSize = 15.sp
+                    text = "Login to continue",
+                    color = gray,
+                    fontSize = 14.sp
                 )
 
-                Spacer(modifier = Modifier.height(26.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // Email
                 OutlinedTextField(
                     value = email,
                     onValueChange = {
@@ -191,23 +127,16 @@ fun LoginScreen(
                         Text("Enter your email")
                     },
                     shape = RoundedCornerShape(18.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Gold,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.10f),
-                        focusedContainerColor = FieldColor,
-                        unfocusedContainerColor = FieldColor,
-                        focusedTextColor = TextWhite,
-                        unfocusedTextColor = TextWhite,
-                        focusedLabelColor = Gold,
-                        unfocusedLabelColor = TextGray,
-                        focusedPlaceholderColor = TextGray,
-                        unfocusedPlaceholderColor = TextGray
+                    colors = loginFieldColors(
+                        gold,
+                        fieldColor,
+                        white,
+                        gray
                     )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Password
                 OutlinedTextField(
                     value = password,
                     onValueChange = {
@@ -216,67 +145,48 @@ fun LoginScreen(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
                     label = {
                         Text("Password")
                     },
                     placeholder = {
                         Text("Enter your password")
                     },
+                    visualTransformation =
+                        PasswordVisualTransformation(),
                     shape = RoundedCornerShape(18.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Gold,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.10f),
-                        focusedContainerColor = FieldColor,
-                        unfocusedContainerColor = FieldColor,
-                        focusedTextColor = TextWhite,
-                        unfocusedTextColor = TextWhite,
-                        focusedLabelColor = Gold,
-                        unfocusedLabelColor = TextGray,
-                        focusedPlaceholderColor = TextGray,
-                        unfocusedPlaceholderColor = TextGray
+                    colors = loginFieldColors(
+                        gold,
+                        fieldColor,
+                        white,
+                        gray
                     )
                 )
 
-                // Error message
                 if (errorMessage.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
                         text = errorMessage,
-                        color = Color(0xFFFF8A8A),
+                        color = MaterialTheme.colorScheme.error,
                         fontSize = 13.sp
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(25.dp))
 
-                // Forgot password
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
-                ) {
-                    Text(
-                        text = "Forgot password?",
-                        color = Gold,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(22.dp))
-
-                // Login button
                 Button(
                     onClick = {
 
                         if (email.isBlank() || password.isBlank()) {
-                            errorMessage = "Please enter your email and password"
+
+                            errorMessage =
+                                "Please enter your email and password"
+
                             return@Button
                         }
 
                         isLoading = true
-                        errorMessage = ""
 
                         auth.signInWithEmailAndPassword(
                             email.trim(),
@@ -286,186 +196,111 @@ fun LoginScreen(
                             isLoading = false
 
                             if (task.isSuccessful) {
+
                                 onLogin()
+
                             } else {
+
                                 errorMessage =
                                     task.exception?.message
                                         ?: "Login failed. Please try again."
                             }
                         }
                     },
-                    enabled = !isLoading,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
+                    enabled = !isLoading,
                     shape = RoundedCornerShape(18.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Gold,
+                        containerColor = gold,
                         contentColor = Color(0xFF101722)
                     )
                 ) {
-                    Text(
-                        text = if (isLoading) {
-                            "Signing in..."
-                        } else {
-                            "Login  →"
-                        },
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    if (isLoading) {
 
-                // Divider
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(1.dp)
-                            .background(
-                                Color.White.copy(alpha = 0.12f)
-                            )
-                    )
-
-                    Text(
-                        text = "  or continue with  ",
-                        color = TextGray,
-                        fontSize = 13.sp
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(1.dp)
-                            .background(
-                                Color.White.copy(alpha = 0.12f)
-                            )
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Social buttons
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-
-                    SocialButton(
-                        text = "G",
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    SocialButton(
-                        text = "",
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    SocialButton(
-                        text = "M",
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Sign up
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(FieldColor)
-                        .padding(vertical = 16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Row {
-                        Text(
-                            text = "Don't have an account? ",
-                            color = TextGray,
-                            fontSize = 14.sp
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(22.dp),
+                            color = Color(0xFF101722),
+                            strokeWidth = 2.dp
                         )
 
+                    } else {
+
                         Text(
-                            text = "Sign up",
-                            color = Gold,
-                            fontSize = 14.sp,
+                            text = "Login →",
+                            fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // Security section
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Box(
-                    modifier = Modifier
-                        .size(42.dp)
-                        .clip(CircleShape)
-                        .background(Gold.copy(alpha = 0.12f)),
-                    contentAlignment = Alignment.Center
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     Text(
-                        text = "✓",
-                        color = Gold,
-                        fontSize = 21.sp,
-                        fontWeight = FontWeight.Bold
+                        text = "Don't have an account? ",
+                        color = gray,
+                        fontSize = 14.sp
                     )
-                }
 
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column {
                     Text(
-                        text = "Your data is protected",
-                        color = TextWhite,
+                        text = "Register",
+                        color = gold,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Text(
-                        text = "Secure attendance management",
-                        color = TextGray,
-                        fontSize = 12.sp
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            onRegister()
+                        }
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Text(
+                text = "🔒 Secure Digital Attendance System",
+                color = gray,
+                fontSize = 12.sp
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
 
 @Composable
-private fun SocialButton(
-    text: String,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .height(58.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(FieldColor)
-            .border(
-                width = 1.dp,
-                color = Color.White.copy(alpha = 0.08f),
-                shape = RoundedCornerShape(16.dp)
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            color = TextWhite,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
+private fun loginFieldColors(
+    gold: Color,
+    fieldColor: Color,
+    white: Color,
+    gray: Color
+) = OutlinedTextFieldDefaults.colors(
+
+    focusedBorderColor = gold,
+
+    unfocusedBorderColor =
+        Color.White.copy(alpha = 0.10f),
+
+    focusedContainerColor = fieldColor,
+
+    unfocusedContainerColor = fieldColor,
+
+    focusedTextColor = white,
+
+    unfocusedTextColor = white,
+
+    focusedLabelColor = gold,
+
+    unfocusedLabelColor = gray,
+
+    focusedPlaceholderColor = gray,
+
+    unfocusedPlaceholderColor = gray
+)
