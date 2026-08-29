@@ -19,7 +19,6 @@ class MainActivity : ComponentActivity() {
 
             when (currentScreen) {
 
-                // LOGIN SCREEN
                 "login" -> {
                     LoginScreen(
                         onLogin = {
@@ -28,24 +27,19 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-
-                // STUDENT DASHBOARD
                 "dashboard" -> {
                     StudentDashboard(
+                        onScanAttendance = {
+                            currentScreen = "scanner"
+                        },
 
                         onLogout = {
                             FirebaseAuth.getInstance().signOut()
                             currentScreen = "login"
-                        },
-
-                        onScanAttendance = {
-                            currentScreen = "scanner"
                         }
                     )
                 }
 
-
-                // QR SCANNER SCREEN
                 "scanner" -> {
                     QrScannerScreen(
                         onBack = {
@@ -54,10 +48,16 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-
-                // REGISTER SCREEN
                 "register" -> {
-                    RegisterScreen()
+                    RegisterScreen(
+                        onRegisterSuccess = {
+                            currentScreen = "login"
+                        },
+
+                        onBackToLogin = {
+                            currentScreen = "login"
+                        }
+                    )
                 }
             }
         }
