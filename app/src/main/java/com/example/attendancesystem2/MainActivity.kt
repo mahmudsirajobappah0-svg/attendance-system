@@ -16,25 +16,35 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             var currentScreen by mutableStateOf("login")
+            var userRole by mutableStateOf("student")
 
             when (currentScreen) {
 
-                // LOGIN SCREEN
                 "login" -> {
                     LoginScreen(
-                        onLogin = {
-                            currentScreen = "studentDashboard"
+
+                        onLoginSuccess = { role ->
+
+                            userRole = role
+
+                            currentScreen =
+                                if (role == "lecturer") {
+                                    "lecturerDashboard"
+                                } else {
+                                    "studentDashboard"
+                                }
                         },
 
-                        onRegister = {
+                        onRegisterClick = {
                             currentScreen = "register"
                         }
                     )
                 }
 
-                // REGISTER SCREEN
+
                 "register" -> {
                     RegisterScreen(
+
                         onRegisterSuccess = {
                             currentScreen = "login"
                         },
@@ -45,32 +55,36 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
-                // STUDENT DASHBOARD
+
                 "studentDashboard" -> {
                     StudentDashboard(
-
-                        onScanAttendance = {
-                            currentScreen = "scanner"
-                        },
 
                         onLogout = {
                             FirebaseAuth.getInstance().signOut()
                             currentScreen = "login"
+                        },
+
+                        onScanAttendance = {
+                            currentScreen = "scanner"
                         }
                     )
                 }
 
-                // QR SCANNER
+
                 "scanner" -> {
                     QrScannerScreen(
 
                         onBack = {
                             currentScreen = "studentDashboard"
+                        },
+
+                        onAttendanceMarked = {
+                            currentScreen = "studentDashboard"
                         }
                     )
                 }
 
-                // LECTURER DASHBOARD
+
                 "lecturerDashboard" -> {
                     LecturerDashboard(
 
