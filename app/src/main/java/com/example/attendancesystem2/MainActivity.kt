@@ -19,16 +19,36 @@ class MainActivity : ComponentActivity() {
 
             when (currentScreen) {
 
+                // LOGIN SCREEN
                 "login" -> {
                     LoginScreen(
                         onLogin = {
-                            currentScreen = "dashboard"
+                            currentScreen = "studentDashboard"
+                        },
+
+                        onRegister = {
+                            currentScreen = "register"
                         }
                     )
                 }
 
-                "dashboard" -> {
+                // REGISTER SCREEN
+                "register" -> {
+                    RegisterScreen(
+                        onRegisterSuccess = {
+                            currentScreen = "login"
+                        },
+
+                        onBackToLogin = {
+                            currentScreen = "login"
+                        }
+                    )
+                }
+
+                // STUDENT DASHBOARD
+                "studentDashboard" -> {
                     StudentDashboard(
+
                         onScanAttendance = {
                             currentScreen = "scanner"
                         },
@@ -40,21 +60,22 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
+                // QR SCANNER
                 "scanner" -> {
                     QrScannerScreen(
+
                         onBack = {
-                            currentScreen = "dashboard"
+                            currentScreen = "studentDashboard"
                         }
                     )
                 }
 
-                "register" -> {
-                    RegisterScreen(
-                        onRegisterSuccess = {
-                            currentScreen = "login"
-                        },
+                // LECTURER DASHBOARD
+                "lecturerDashboard" -> {
+                    LecturerDashboard(
 
-                        onBackToLogin = {
+                        onLogout = {
+                            FirebaseAuth.getInstance().signOut()
                             currentScreen = "login"
                         }
                     )
