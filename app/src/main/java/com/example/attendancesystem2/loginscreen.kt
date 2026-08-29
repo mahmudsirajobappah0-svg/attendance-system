@@ -12,16 +12,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun LoginScreen(
-
     onLoginSuccess: (String) -> Unit,
-
     onRegisterClick: () -> Unit
 ) {
 
@@ -48,7 +49,8 @@ fun LoginScreen(
                 Brush.verticalGradient(
                     listOf(
                         Color(0xFF111A2A),
-                        background
+                        background,
+                        Color(0xFF080C14)
                     )
                 )
             )
@@ -56,8 +58,7 @@ fun LoginScreen(
     ) {
 
         Column(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -128,16 +129,19 @@ fun LoginScreen(
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor =
-                                if (selectedRole == "student") gold
-                                else fieldColor,
+                                if (selectedRole == "student")
+                                    gold
+                                else
+                                    fieldColor,
                             contentColor =
-                                if (selectedRole == "student") Color.Black
-                                else white
+                                if (selectedRole == "student")
+                                    Color.Black
+                                else
+                                    white
                         )
                     ) {
                         Text("Student")
                     }
-
 
                     Button(
                         onClick = {
@@ -146,11 +150,15 @@ fun LoginScreen(
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor =
-                                if (selectedRole == "lecturer") gold
-                                else fieldColor,
+                                if (selectedRole == "lecturer")
+                                    gold
+                                else
+                                    fieldColor,
                             contentColor =
-                                if (selectedRole == "lecturer") Color.Black
-                                else white
+                                if (selectedRole == "lecturer")
+                                    Color.Black
+                                else
+                                    white
                         )
                     ) {
                         Text("Lecturer")
@@ -160,65 +168,63 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 OutlinedTextField(
-
                     value = email,
-
                     onValueChange = {
                         email = it
                     },
-
                     modifier = Modifier.fillMaxWidth(),
-
                     label = {
                         Text("Email")
                     },
-
+                    placeholder = {
+                        Text("example@gmail.com")
+                    },
                     singleLine = true,
-
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = gold,
                         unfocusedBorderColor =
                             Color.White.copy(alpha = 0.15f),
-
                         focusedContainerColor = fieldColor,
                         unfocusedContainerColor = fieldColor,
-
                         focusedTextColor = white,
-                        unfocusedTextColor = white
+                        unfocusedTextColor = white,
+                        focusedLabelColor = gold,
+                        unfocusedLabelColor = gray
                     )
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
 
                 OutlinedTextField(
-
                     value = password,
-
                     onValueChange = {
                         password = it
                     },
-
                     modifier = Modifier.fillMaxWidth(),
-
                     label = {
                         Text("Password")
                     },
-
+                    singleLine = true,
                     visualTransformation =
                         PasswordVisualTransformation(),
-
-                    singleLine = true,
-
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = gold,
                         unfocusedBorderColor =
                             Color.White.copy(alpha = 0.15f),
-
                         focusedContainerColor = fieldColor,
                         unfocusedContainerColor = fieldColor,
-
                         focusedTextColor = white,
-                        unfocusedTextColor = white
+                        unfocusedTextColor = white,
+                        focusedLabelColor = gold,
+                        unfocusedLabelColor = gray
                     )
                 )
 
@@ -236,13 +242,34 @@ fun LoginScreen(
                 }
 
                 Button(
-
                     onClick = {
 
-                        if (email.isEmpty() || password.isEmpty()) {
+                        // Remove accidental spaces
+                        val cleanEmail =
+                            email.trim().lowercase()
+
+                        val cleanPassword =
+                            password.trim()
+
+                        // Check empty fields
+                        if (cleanEmail.isEmpty() ||
+                            cleanPassword.isEmpty()
+                        ) {
 
                             errorMessage =
                                 "Please enter your email and password"
+
+                            return@Button
+                        }
+
+                        // Check email format
+                        if (!android.util.Patterns.EMAIL_ADDRESS
+                                .matcher(cleanEmail)
+                                .matches()
+                        ) {
+
+                            errorMessage =
+                                "Please enter a valid email address"
 
                             return@Button
                         }
@@ -251,8 +278,8 @@ fun LoginScreen(
                         errorMessage = ""
 
                         auth.signInWithEmailAndPassword(
-                            email,
-                            password
+                            cleanEmail,
+                            cleanPassword
                         ).addOnCompleteListener { task ->
 
                             loading = false
@@ -269,13 +296,10 @@ fun LoginScreen(
                             }
                         }
                     },
-
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
-
                     shape = RoundedCornerShape(18.dp),
-
                     colors = ButtonDefaults.buttonColors(
                         containerColor = gold,
                         contentColor = Color(0xFF101722)
@@ -285,7 +309,8 @@ fun LoginScreen(
                     if (loading) {
 
                         CircularProgressIndicator(
-                            modifier = Modifier.size(25.dp)
+                            modifier = Modifier.size(25.dp),
+                            color = Color(0xFF101722)
                         )
 
                     } else {
@@ -301,10 +326,8 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement =
-                        Arrangement.Center
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
 
                     Text(
