@@ -18,11 +18,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
 
 @Composable
 fun RegisterScreen(
+
     onRegisterSuccess: () -> Unit,
+
     onBackToLogin: () -> Unit
 ) {
 
@@ -31,9 +32,8 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
 
-    var errorMessage by remember { mutableStateOf("") }
-    var successMessage by remember { mutableStateOf("") }
-    var isLoading by remember { mutableStateOf(false) }
+    var loading by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf("") }
 
     val background = Color(0xFF080D17)
     val cardColor = Color(0xFF111927)
@@ -51,22 +51,24 @@ fun RegisterScreen(
                 Brush.verticalGradient(
                     listOf(
                         Color(0xFF111A2A),
-                        background,
-                        Color(0xFF080C14)
+                        background
                     )
                 )
             )
     ) {
 
         Column(
+
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+
+            horizontalAlignment =
+                Alignment.CenterHorizontally
         ) {
 
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Text(
                 text = "Create Account",
@@ -78,14 +80,14 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Join the smarter way to manage attendance",
-                color = gray,
-                fontSize = 14.sp
+                text = "Create your attendance account",
+                color = gray
             )
 
             Spacer(modifier = Modifier.height(30.dp))
 
             Column(
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
@@ -100,291 +102,186 @@ fun RegisterScreen(
                     .padding(24.dp)
             ) {
 
-                Text(
-                    text = "Your Details",
-                    color = white,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
+                OutlinedTextField(
+
+                    value = name,
+
+                    onValueChange = {
+                        name = it
+                    },
+
+                    modifier = Modifier.fillMaxWidth(),
+
+                    label = {
+                        Text("Full Name")
+                    },
+
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                OutlinedTextField(
+
+                    value = email,
+
+                    onValueChange = {
+                        email = it
+                    },
+
+                    modifier = Modifier.fillMaxWidth(),
+
+                    label = {
+                        Text("Email")
+                    },
+
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                OutlinedTextField(
+
+                    value = password,
+
+                    onValueChange = {
+                        password = it
+                    },
+
+                    modifier = Modifier.fillMaxWidth(),
+
+                    label = {
+                        Text("Password")
+                    },
+
+                    visualTransformation =
+                        PasswordVisualTransformation(),
+
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                OutlinedTextField(
+
+                    value = confirmPassword,
+
+                    onValueChange = {
+                        confirmPassword = it
+                    },
+
+                    modifier = Modifier.fillMaxWidth(),
+
+                    label = {
+                        Text("Confirm Password")
+                    },
+
+                    visualTransformation =
+                        PasswordVisualTransformation(),
+
+                    singleLine = true
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = {
-                        name = it
-                        errorMessage = ""
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    label = { Text("Full Name") },
-                    placeholder = { Text("Enter your full name") },
-                    shape = RoundedCornerShape(18.dp),
-                    colors = registerFieldColors(
-                        gold,
-                        fieldColor,
-                        white,
-                        gray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = {
-                        email = it
-                        errorMessage = ""
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    label = { Text("Email") },
-                    placeholder = { Text("Enter your email") },
-                    shape = RoundedCornerShape(18.dp),
-                    colors = registerFieldColors(
-                        gold,
-                        fieldColor,
-                        white,
-                        gray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                OutlinedTextField(
-                    value = password,
-                    onValueChange = {
-                        password = it
-                        errorMessage = ""
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    visualTransformation =
-                        PasswordVisualTransformation(),
-                    label = { Text("Password") },
-                    placeholder = { Text("Create a password") },
-                    shape = RoundedCornerShape(18.dp),
-                    colors = registerFieldColors(
-                        gold,
-                        fieldColor,
-                        white,
-                        gray
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(14.dp))
-
-                OutlinedTextField(
-                    value = confirmPassword,
-                    onValueChange = {
-                        confirmPassword = it
-                        errorMessage = ""
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    visualTransformation =
-                        PasswordVisualTransformation(),
-                    label = { Text("Confirm Password") },
-                    placeholder = { Text("Repeat your password") },
-                    shape = RoundedCornerShape(18.dp),
-                    colors = registerFieldColors(
-                        gold,
-                        fieldColor,
-                        white,
-                        gray
-                    )
-                )
-
-                if (errorMessage.isNotEmpty()) {
-
-                    Spacer(modifier = Modifier.height(12.dp))
+                if (message.isNotEmpty()) {
 
                     Text(
-                        text = errorMessage,
-                        color = MaterialTheme.colorScheme.error,
-                        fontSize = 13.sp
+                        text = message,
+                        color = Color.Red
                     )
+
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
-
-                if (successMessage.isNotEmpty()) {
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    Text(
-                        text = successMessage,
-                        color = gold,
-                        fontSize = 13.sp
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
+
                     onClick = {
 
-                        errorMessage = ""
-                        successMessage = ""
+                        if (
+                            name.isEmpty() ||
+                            email.isEmpty() ||
+                            password.isEmpty()
+                        ) {
 
-                        when {
+                            message =
+                                "Please fill all fields"
 
-                            name.isBlank() -> {
-                                errorMessage =
-                                    "Please enter your full name"
-                            }
+                            return@Button
+                        }
 
-                            email.isBlank() -> {
-                                errorMessage =
-                                    "Please enter your email"
-                            }
+                        if (password != confirmPassword) {
 
-                            password.isBlank() -> {
-                                errorMessage =
-                                    "Please enter a password"
-                            }
+                            message =
+                                "Passwords do not match"
 
-                            password.length < 6 -> {
-                                errorMessage =
-                                    "Password must be at least 6 characters"
-                            }
+                            return@Button
+                        }
 
-                            password != confirmPassword -> {
-                                errorMessage =
-                                    "Passwords do not match"
-                            }
+                        loading = true
+                        message = ""
 
-                            else -> {
+                        auth
+                            .createUserWithEmailAndPassword(
+                                email,
+                                password
+                            )
+                            .addOnCompleteListener { task ->
 
-                                isLoading = true
+                                loading = false
 
-                                auth.createUserWithEmailAndPassword(
-                                    email.trim(),
-                                    password
-                                ).addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
 
-                                    if (task.isSuccessful) {
+                                    onRegisterSuccess()
 
-                                        val user = auth.currentUser
+                                } else {
 
-                                        val profileUpdates =
-                                            UserProfileChangeRequest.Builder()
-                                                .setDisplayName(name)
-                                                .build()
-
-                                        user?.updateProfile(profileUpdates)
-
-                                        isLoading = false
-
-                                        successMessage =
-                                            "Account created successfully!"
-
-                                        onRegisterSuccess()
-
-                                    } else {
-
-                                        isLoading = false
-
-                                        errorMessage =
-                                            task.exception?.message
-                                                ?: "Registration failed. Please try again."
-                                    }
+                                    message =
+                                        task.exception?.message
+                                            ?: "Registration failed"
                                 }
                             }
-                        }
                     },
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
-                    enabled = !isLoading,
+
                     shape = RoundedCornerShape(18.dp),
+
                     colors = ButtonDefaults.buttonColors(
                         containerColor = gold,
-                        contentColor = Color(0xFF101722)
+                        contentColor = Color.Black
                     )
                 ) {
 
-                    if (isLoading) {
+                    if (loading) {
 
                         CircularProgressIndicator(
-                            modifier = Modifier.size(22.dp),
-                            color = Color(0xFF101722),
-                            strokeWidth = 2.dp
+                            modifier = Modifier.size(25.dp)
                         )
 
                     } else {
 
                         Text(
-                            text = "Create Account →",
-                            fontSize = 16.sp,
+                            text = "Create Account",
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(22.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-
-                    Text(
-                        text = "Already have an account? ",
-                        color = gray,
-                        fontSize = 14.sp
-                    )
-
-                    Text(
-                        text = "Login",
-                        color = gold,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable {
+                Text(
+                    text = "Already have an account? Login",
+                    color = gold,
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .clickable {
                             onBackToLogin()
                         }
-                    )
-                }
+                )
             }
-
-            Spacer(modifier = Modifier.height(25.dp))
-
-            Text(
-                text = "🔒 Your information is securely protected",
-                color = gray,
-                fontSize = 12.sp
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
-
-@Composable
-private fun registerFieldColors(
-    gold: Color,
-    fieldColor: Color,
-    white: Color,
-    gray: Color
-) = OutlinedTextFieldDefaults.colors(
-
-    focusedBorderColor = gold,
-
-    unfocusedBorderColor =
-        Color.White.copy(alpha = 0.10f),
-
-    focusedContainerColor = fieldColor,
-
-    unfocusedContainerColor = fieldColor,
-
-    focusedTextColor = white,
-
-    unfocusedTextColor = white,
-
-    focusedLabelColor = gold,
-
-    unfocusedLabelColor = gray,
-
-    focusedPlaceholderColor = gray,
-
-    unfocusedPlaceholderColor = gray
-)
