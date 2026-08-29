@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 
 @Composable
 fun RegisterScreen(
@@ -28,7 +30,10 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf("") }
+
+    var errorMessage by remember { mutableStateOf("") }
+    var successMessage by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     val background = Color(0xFF080D17)
     val cardColor = Color(0xFF111927)
@@ -36,6 +41,8 @@ fun RegisterScreen(
     val gold = Color(0xFFE7B96B)
     val white = Color(0xFFF5F5F5)
     val gray = Color(0xFF9BA5B5)
+
+    val auth = FirebaseAuth.getInstance()
 
     Box(
         modifier = Modifier
@@ -97,14 +104,17 @@ fun RegisterScreen(
                     text = "Your Details",
                     color = white,
                     fontSize = 22.sp,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 OutlinedTextField(
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = {
+                        name = it
+                        errorMessage = ""
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     label = { Text("Full Name") },
@@ -122,7 +132,10 @@ fun RegisterScreen(
 
                 OutlinedTextField(
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        errorMessage = ""
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     label = { Text("Email") },
@@ -140,15 +153,16 @@ fun RegisterScreen(
 
                 OutlinedTextField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        password = it
+                        errorMessage = ""
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation =
                         PasswordVisualTransformation(),
                     label = { Text("Password") },
-                    placeholder = {
-                        Text("Create a password")
-                    },
+                    placeholder = { Text("Create a password") },
                     shape = RoundedCornerShape(18.dp),
                     colors = registerFieldColors(
                         gold,
@@ -162,15 +176,16 @@ fun RegisterScreen(
 
                 OutlinedTextField(
                     value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
+                    onValueChange = {
+                        confirmPassword = it
+                        errorMessage = ""
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     visualTransformation =
                         PasswordVisualTransformation(),
                     label = { Text("Confirm Password") },
-                    placeholder = {
-                        Text("Repeat your password")
-                    },
+                    placeholder = { Text("Repeat your password") },
                     shape = RoundedCornerShape(18.dp),
                     colors = registerFieldColors(
                         gold,
@@ -180,14 +195,25 @@ fun RegisterScreen(
                     )
                 )
 
-                if (message.isNotEmpty()) {
+                if (errorMessage.isNotEmpty()) {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
-                        text = message,
+                        text = errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 13.sp
+                    )
+                }
+
+                if (successMessage.isNotEmpty()) {
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = successMessage,
                         color = gold,
-                        fontSize = 14.sp
+                        fontSize = 13.sp
                     )
                 }
 
@@ -196,43 +222,79 @@ fun RegisterScreen(
                 Button(
                     onClick = {
 
+                        errorMessage = ""
+                        successMessage = ""
+
                         when {
 
-                            name.isBlank() ||
-                            email.isBlank() ||
-                            password.isBlank() ||
-                            confirmPassword.isBlank() -> {
-
-                                message =
-                                    "Please fill in all fields"
+                            name.isBlank() -> {
+                                errorMessage =
+                                    "Please enter your full name"
                             }
 
-                            password != confirmPassword -> {
+                            email.isBlank() -> {
+                                errorMessage =
+                                    "Please enter your email"
+                            }
 
-                                message =
-                                    "Passwords do not match"
+                            password.isBlank() -> {
+                                errorMessage =
+                                    "Please enter a password"
                             }
 
                             password.length < 6 -> {
-
-                                message =
+                                errorMessage =
                                     "Password must be at least 6 characters"
+                            }
+
+                            password != confirmPassword -> {
+                                errorMessage =
+                                    "Passwords do not match"
                             }
 
                             else -> {
 
-                                message = ""
+                                isLoading = true
 
-                                // Firebase registration
-                                // will be connected next
+                                auth.createUserWithEmailAndPassword(
+                                    email.trim(),
+                                    password
+                                ).addOnCompleteListener { task ->
 
-                                onRegisterSuccess()
+                                    if (task.isSuccessful) {
+
+                                        val user = auth.currentUser
+
+                                        val profileUpdates =
+                                            UserProfileChangeRequest.Builder()
+                                                .setDisplayName(name)
+                                                .build()
+
+                                        user?.updateProfile(profileUpdates)
+
+                                        isLoading = false
+
+                                        successMessage =
+                                            "Account created successfully!"
+
+                                        onRegisterSuccess()
+
+                                    } else {
+
+                                        isLoading = false
+
+                                        errorMessage =
+                                            task.exception?.message
+                                                ?: "Registration failed. Please try again."
+                                    }
+                                }
                             }
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
+                    enabled = !isLoading,
                     shape = RoundedCornerShape(18.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = gold,
@@ -240,19 +302,30 @@ fun RegisterScreen(
                     )
                 ) {
 
-                    Text(
-                        text = "Create Account  →",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    if (isLoading) {
+
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(22.dp),
+                            color = Color(0xFF101722),
+                            strokeWidth = 2.dp
+                        )
+
+                    } else {
+
+                        Text(
+                            text = "Create Account →",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(22.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement =
-                        Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
                     Text(
@@ -280,6 +353,8 @@ fun RegisterScreen(
                 color = gray,
                 fontSize = 12.sp
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
