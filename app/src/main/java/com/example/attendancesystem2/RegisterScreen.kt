@@ -2,6 +2,7 @@ package com.example.attendancesystem2
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,12 +19,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit,
+    onBackToLogin: () -> Unit
+) {
 
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
 
     val background = Color(0xFF080D17)
     val cardColor = Color(0xFF111927)
@@ -60,7 +65,7 @@ fun RegisterScreen() {
                 text = "Create Account",
                 color = white,
                 fontSize = 30.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -89,7 +94,7 @@ fun RegisterScreen() {
             ) {
 
                 Text(
-                    text = "Your details",
+                    text = "Your Details",
                     color = white,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Medium
@@ -102,10 +107,15 @@ fun RegisterScreen() {
                     onValueChange = { name = it },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    label = { Text("Full name") },
+                    label = { Text("Full Name") },
                     placeholder = { Text("Enter your full name") },
                     shape = RoundedCornerShape(18.dp),
-                    colors = fieldColors(gold, fieldColor, white, gray)
+                    colors = registerFieldColors(
+                        gold,
+                        fieldColor,
+                        white,
+                        gray
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -118,7 +128,12 @@ fun RegisterScreen() {
                     label = { Text("Email") },
                     placeholder = { Text("Enter your email") },
                     shape = RoundedCornerShape(18.dp),
-                    colors = fieldColors(gold, fieldColor, white, gray)
+                    colors = registerFieldColors(
+                        gold,
+                        fieldColor,
+                        white,
+                        gray
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -128,11 +143,19 @@ fun RegisterScreen() {
                     onValueChange = { password = it },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
+                    visualTransformation =
+                        PasswordVisualTransformation(),
                     label = { Text("Password") },
-                    placeholder = { Text("Create a password") },
+                    placeholder = {
+                        Text("Create a password")
+                    },
                     shape = RoundedCornerShape(18.dp),
-                    colors = fieldColors(gold, fieldColor, white, gray)
+                    colors = registerFieldColors(
+                        gold,
+                        fieldColor,
+                        white,
+                        gray
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(14.dp))
@@ -142,18 +165,70 @@ fun RegisterScreen() {
                     onValueChange = { confirmPassword = it },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    label = { Text("Confirm password") },
-                    placeholder = { Text("Repeat your password") },
+                    visualTransformation =
+                        PasswordVisualTransformation(),
+                    label = { Text("Confirm Password") },
+                    placeholder = {
+                        Text("Repeat your password")
+                    },
                     shape = RoundedCornerShape(18.dp),
-                    colors = fieldColors(gold, fieldColor, white, gray)
+                    colors = registerFieldColors(
+                        gold,
+                        fieldColor,
+                        white,
+                        gray
+                    )
                 )
+
+                if (message.isNotEmpty()) {
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = message,
+                        color = gold,
+                        fontSize = 14.sp
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = {
-                        // Registration will be connected to Firebase later
+
+                        when {
+
+                            name.isBlank() ||
+                            email.isBlank() ||
+                            password.isBlank() ||
+                            confirmPassword.isBlank() -> {
+
+                                message =
+                                    "Please fill in all fields"
+                            }
+
+                            password != confirmPassword -> {
+
+                                message =
+                                    "Passwords do not match"
+                            }
+
+                            password.length < 6 -> {
+
+                                message =
+                                    "Password must be at least 6 characters"
+                            }
+
+                            else -> {
+
+                                message = ""
+
+                                // Firebase registration
+                                // will be connected next
+
+                                onRegisterSuccess()
+                            }
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -164,6 +239,7 @@ fun RegisterScreen() {
                         contentColor = Color(0xFF101722)
                     )
                 ) {
+
                     Text(
                         text = "Create Account  →",
                         fontSize = 16.sp,
@@ -175,8 +251,10 @@ fun RegisterScreen() {
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement =
+                        Arrangement.Center
                 ) {
+
                     Text(
                         text = "Already have an account? ",
                         color = gray,
@@ -187,7 +265,10 @@ fun RegisterScreen() {
                         text = "Login",
                         color = gold,
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            onBackToLogin()
+                        }
                     )
                 }
             }
@@ -204,20 +285,31 @@ fun RegisterScreen() {
 }
 
 @Composable
-private fun fieldColors(
+private fun registerFieldColors(
     gold: Color,
     fieldColor: Color,
     white: Color,
     gray: Color
 ) = OutlinedTextFieldDefaults.colors(
+
     focusedBorderColor = gold,
-    unfocusedBorderColor = Color.White.copy(alpha = 0.10f),
+
+    unfocusedBorderColor =
+        Color.White.copy(alpha = 0.10f),
+
     focusedContainerColor = fieldColor,
+
     unfocusedContainerColor = fieldColor,
+
     focusedTextColor = white,
+
     unfocusedTextColor = white,
+
     focusedLabelColor = gold,
+
     unfocusedLabelColor = gray,
+
     focusedPlaceholderColor = gray,
+
     unfocusedPlaceholderColor = gray
 )
