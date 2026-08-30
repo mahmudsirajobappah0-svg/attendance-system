@@ -16,16 +16,13 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             var currentScreen by mutableStateOf("login")
-            var userRole by mutableStateOf("student")
 
             when (currentScreen) {
 
                 "login" -> {
+
                     LoginScreen(
-
                         onLoginSuccess = { role ->
-
-                            userRole = role
 
                             currentScreen =
                                 if (role == "lecturer") {
@@ -43,8 +40,8 @@ class MainActivity : ComponentActivity() {
 
 
                 "register" -> {
-                    RegisterScreen(
 
+                    RegisterScreen(
                         onRegisterSuccess = {
                             currentScreen = "login"
                         },
@@ -57,8 +54,8 @@ class MainActivity : ComponentActivity() {
 
 
                 "studentDashboard" -> {
-                    StudentDashboard(
 
+                    StudentDashboard(
                         onLogout = {
                             FirebaseAuth.getInstance().signOut()
                             currentScreen = "login"
@@ -72,8 +69,8 @@ class MainActivity : ComponentActivity() {
 
 
                 "scanner" -> {
-                    QrScannerScreen(
 
+                    QrScannerScreen(
                         onBack = {
                             currentScreen = "studentDashboard"
                         },
@@ -86,8 +83,8 @@ class MainActivity : ComponentActivity() {
 
 
                 "lecturerDashboard" -> {
-                    LecturerDashboard(
 
+                    LecturerDashboard(
                         onLogout = {
                             FirebaseAuth.getInstance().signOut()
                             currentScreen = "login"
