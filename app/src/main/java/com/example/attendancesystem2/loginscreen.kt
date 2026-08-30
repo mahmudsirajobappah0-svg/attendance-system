@@ -1,5 +1,8 @@
 package com.example.attendancesystem2
 
+import android.os.Handler
+import android.os.Looper
+import android.util.Patterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
@@ -129,15 +132,12 @@ fun LoginScreen(
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor =
-                                if (selectedRole == "student")
-                                    gold
-                                else
-                                    fieldColor,
+                                if (selectedRole == "student") gold
+                                else fieldColor,
+
                             contentColor =
-                                if (selectedRole == "student")
-                                    Color.Black
-                                else
-                                    white
+                                if (selectedRole == "student") Color.Black
+                                else white
                         )
                     ) {
                         Text("Student")
@@ -150,15 +150,12 @@ fun LoginScreen(
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor =
-                                if (selectedRole == "lecturer")
-                                    gold
-                                else
-                                    fieldColor,
+                                if (selectedRole == "lecturer") gold
+                                else fieldColor,
+
                             contentColor =
-                                if (selectedRole == "lecturer")
-                                    Color.Black
-                                else
-                                    white
+                                if (selectedRole == "lecturer") Color.Black
+                                else white
                         )
                     ) {
                         Text("Lecturer")
@@ -171,6 +168,7 @@ fun LoginScreen(
                     value = email,
                     onValueChange = {
                         email = it
+                        errorMessage = ""
                     },
                     modifier = Modifier.fillMaxWidth(),
                     label = {
@@ -203,6 +201,7 @@ fun LoginScreen(
                     value = password,
                     onValueChange = {
                         password = it
+                        errorMessage = ""
                     },
                     modifier = Modifier.fillMaxWidth(),
                     label = {
@@ -244,33 +243,25 @@ fun LoginScreen(
                 Button(
                     onClick = {
 
-                        // Remove accidental spaces
-                        val cleanEmail =
-                            email.trim().lowercase()
+                        val cleanEmail = email.trim()
+                        val cleanPassword = password.trim()
 
-                        val cleanPassword =
-                            password.trim()
-
-                        // Check empty fields
-                        if (cleanEmail.isEmpty() ||
-                            cleanPassword.isEmpty()
-                        ) {
-
-                            errorMessage =
-                                "Please enter your email and password"
-
+                        if (cleanEmail.isEmpty()) {
+                            errorMessage = "Please enter your email"
                             return@Button
                         }
 
-                        // Check email format
-                        if (!android.util.Patterns.EMAIL_ADDRESS
+                        if (!Patterns.EMAIL_ADDRESS
                                 .matcher(cleanEmail)
                                 .matches()
                         ) {
 
-                            errorMessage =
-                                "Please enter a valid email address"
+                            errorMessage = "Please enter a valid email"
+                            return@Button
+                        }
 
+                        if (cleanPassword.isEmpty()) {
+                            errorMessage = "Please enter your password"
                             return@Button
                         }
 
@@ -280,26 +271,43 @@ fun LoginScreen(
                         auth.signInWithEmailAndPassword(
                             cleanEmail,
                             cleanPassword
-                        ).addOnCompleteListener { task ->
+                        )
+                            .addOnCompleteListener { task ->
 
-                            loading = false
+                                loading = false
 
-                            if (task.isSuccessful) {
+                                if (task.isSuccessful) {
 
-                                onLoginSuccess(selectedRole)
+                                    onLoginSuccess(selectedRole)
 
-                            } else {
+                                } else {
+
+                                    errorMessage =
+                                        task.exception?.message
+                                            ?: "Login failed"
+                                }
+                            }
+
+                        // Stop infinite loading after 15 seconds
+                        Handler(Looper.getMainLooper()).postDelayed({
+
+                            if (loading) {
+
+                                loading = false
 
                                 errorMessage =
-                                    task.exception?.message
-                                        ?: "Login failed"
+                                    "Connection timed out. Check your internet and Firebase configuration."
                             }
-                        }
+
+                        }, 15000)
                     },
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp),
+
                     shape = RoundedCornerShape(18.dp),
+
                     colors = ButtonDefaults.buttonColors(
                         containerColor = gold,
                         contentColor = Color(0xFF101722)
@@ -309,8 +317,9 @@ fun LoginScreen(
                     if (loading) {
 
                         CircularProgressIndicator(
-                            modifier = Modifier.size(25.dp),
-                            color = Color(0xFF101722)
+                            modifier = Modifier.size(28.dp),
+                            color = Color(0xFF101722),
+                            strokeWidth = 3.dp
                         )
 
                     } else {
