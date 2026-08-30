@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +15,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            var currentScreen by mutableStateOf("login")
+            var currentScreen by rememberSaveable {
+                mutableStateOf("login")
+            }
 
             when (currentScreen) {
 
