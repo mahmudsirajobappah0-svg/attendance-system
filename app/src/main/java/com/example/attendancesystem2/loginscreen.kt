@@ -1,7 +1,5 @@
 package com.example.attendancesystem2
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Patterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,8 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
@@ -184,8 +182,7 @@ fun LoginScreen(
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = gold,
-                        unfocusedBorderColor =
-                            Color.White.copy(alpha = 0.15f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
                         focusedContainerColor = fieldColor,
                         unfocusedContainerColor = fieldColor,
                         focusedTextColor = white,
@@ -208,16 +205,14 @@ fun LoginScreen(
                         Text("Password")
                     },
                     singleLine = true,
-                    visualTransformation =
-                        PasswordVisualTransformation(),
+                    visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = gold,
-                        unfocusedBorderColor =
-                            Color.White.copy(alpha = 0.15f),
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.15f),
                         focusedContainerColor = fieldColor,
                         unfocusedContainerColor = fieldColor,
                         focusedTextColor = white,
@@ -233,7 +228,7 @@ fun LoginScreen(
 
                     Text(
                         text = errorMessage,
-                        color = Color.Red,
+                        color = MaterialTheme.colorScheme.error,
                         fontSize = 13.sp
                     )
 
@@ -243,8 +238,10 @@ fun LoginScreen(
                 Button(
                     onClick = {
 
+                        if (loading) return@Button
+
                         val cleanEmail = email.trim()
-                        val cleanPassword = password.trim()
+                        val cleanPassword = password
 
                         if (cleanEmail.isEmpty()) {
                             errorMessage = "Please enter your email"
@@ -255,7 +252,6 @@ fun LoginScreen(
                                 .matcher(cleanEmail)
                                 .matches()
                         ) {
-
                             errorMessage = "Please enter a valid email"
                             return@Button
                         }
@@ -272,34 +268,20 @@ fun LoginScreen(
                             cleanEmail,
                             cleanPassword
                         )
-                            .addOnCompleteListener { task ->
+                            .addOnSuccessListener {
 
                                 loading = false
 
-                                if (task.isSuccessful) {
-
-                                    onLoginSuccess(selectedRole)
-
-                                } else {
-
-                                    errorMessage =
-                                        task.exception?.message
-                                            ?: "Login failed"
-                                }
+                                onLoginSuccess(selectedRole)
                             }
-
-                        // Stop infinite loading after 15 seconds
-                        Handler(Looper.getMainLooper()).postDelayed({
-
-                            if (loading) {
+                            .addOnFailureListener { exception ->
 
                                 loading = false
 
                                 errorMessage =
-                                    "Connection timed out. Check your internet and Firebase configuration."
+                                    exception.message
+                                        ?: "Login failed. Please try again."
                             }
-
-                        }, 15000)
                     },
 
                     modifier = Modifier
@@ -308,9 +290,13 @@ fun LoginScreen(
 
                     shape = RoundedCornerShape(18.dp),
 
+                    enabled = !loading,
+
                     colors = ButtonDefaults.buttonColors(
                         containerColor = gold,
-                        contentColor = Color(0xFF101722)
+                        contentColor = Color(0xFF101722),
+                        disabledContainerColor = gold.copy(alpha = 0.6f),
+                        disabledContentColor = Color(0xFF101722)
                     )
                 ) {
 
