@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -15,15 +15,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            var currentScreen by rememberSaveable {
-                mutableStateOf("login")
-            }
+            var currentScreen by mutableStateOf("login")
 
             when (currentScreen) {
 
+                // LOGIN SCREEN
                 "login" -> {
-
                     LoginScreen(
+
                         onLoginSuccess = { role ->
 
                             currentScreen =
@@ -41,9 +40,10 @@ class MainActivity : ComponentActivity() {
                 }
 
 
+                // REGISTER SCREEN
                 "register" -> {
-
                     RegisterScreen(
+
                         onRegisterSuccess = {
                             currentScreen = "login"
                         },
@@ -55,9 +55,10 @@ class MainActivity : ComponentActivity() {
                 }
 
 
+                // STUDENT DASHBOARD
                 "studentDashboard" -> {
-
                     StudentDashboard(
+
                         onLogout = {
                             FirebaseAuth.getInstance().signOut()
                             currentScreen = "login"
@@ -70,9 +71,10 @@ class MainActivity : ComponentActivity() {
                 }
 
 
+                // QR SCANNER
                 "scanner" -> {
-
                     QrScannerScreen(
+
                         onBack = {
                             currentScreen = "studentDashboard"
                         },
@@ -84,9 +86,10 @@ class MainActivity : ComponentActivity() {
                 }
 
 
+                // LECTURER DASHBOARD
                 "lecturerDashboard" -> {
-
                     LecturerDashboard(
+
                         onLogout = {
                             FirebaseAuth.getInstance().signOut()
                             currentScreen = "login"
