@@ -3,9 +3,11 @@ package com.example.attendancesystem2
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.material3.MaterialTheme
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
@@ -14,88 +16,101 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            AttendanceApp()
+        }
+    }
+}
 
-            var currentScreen by mutableStateOf("login")
+@Composable
+fun AttendanceApp() {
 
-            when (currentScreen) {
+    var currentScreen by mutableStateOf("login")
 
-                // LOGIN SCREEN
-                "login" -> {
-                    LoginScreen(
+    MaterialTheme {
 
-                        onLoginSuccess = { role ->
+        when (currentScreen) {
 
-                            currentScreen =
-                                if (role == "lecturer") {
-                                    "lecturerDashboard"
-                                } else {
-                                    "studentDashboard"
-                                }
-                        },
+            // LOGIN SCREEN
+            "login" -> {
 
-                        onRegisterClick = {
-                            currentScreen = "register"
-                        }
-                    )
-                }
+                LoginScreen(
 
+                    onLoginSuccess = { role ->
 
-                // REGISTER SCREEN
-                "register" -> {
-                    RegisterScreen(
+                        currentScreen =
+                            if (role == "lecturer") {
+                                "lecturerDashboard"
+                            } else {
+                                "studentDashboard"
+                            }
+                    },
 
-                        onRegisterSuccess = {
-                            currentScreen = "login"
-                        },
-
-                        onBackToLogin = {
-                            currentScreen = "login"
-                        }
-                    )
-                }
+                    onRegisterClick = {
+                        currentScreen = "register"
+                    }
+                )
+            }
 
 
-                // STUDENT DASHBOARD
-                "studentDashboard" -> {
-                    StudentDashboard(
+            // REGISTER SCREEN
+            "register" -> {
 
-                        onLogout = {
-                            FirebaseAuth.getInstance().signOut()
-                            currentScreen = "login"
-                        },
+                RegisterScreen(
 
-                        onScanAttendance = {
-                            currentScreen = "scanner"
-                        }
-                    )
-                }
+                    onRegisterSuccess = {
+                        currentScreen = "login"
+                    },
 
-
-                // QR SCANNER
-                "scanner" -> {
-                    QrScannerScreen(
-
-                        onBack = {
-                            currentScreen = "studentDashboard"
-                        },
-
-                        onAttendanceMarked = {
-                            currentScreen = "studentDashboard"
-                        }
-                    )
-                }
+                    onBackToLogin = {
+                        currentScreen = "login"
+                    }
+                )
+            }
 
 
-                // LECTURER DASHBOARD
-                "lecturerDashboard" -> {
-                    LecturerDashboard(
+            // STUDENT DASHBOARD
+            "studentDashboard" -> {
 
-                        onLogout = {
-                            FirebaseAuth.getInstance().signOut()
-                            currentScreen = "login"
-                        }
-                    )
-                }
+                StudentDashboard(
+
+                    onLogout = {
+                        FirebaseAuth.getInstance().signOut()
+                        currentScreen = "login"
+                    },
+
+                    onScanAttendance = {
+                        currentScreen = "scanner"
+                    }
+                )
+            }
+
+
+            // QR SCANNER
+            "scanner" -> {
+
+                QrScannerScreen(
+
+                    onBack = {
+                        currentScreen = "studentDashboard"
+                    },
+
+                    onAttendanceMarked = {
+                        currentScreen = "studentDashboard"
+                    }
+                )
+            }
+
+
+            // LECTURER DASHBOARD
+            "lecturerDashboard" -> {
+
+                LecturerDashboard(
+
+                    onLogout = {
+                        FirebaseAuth.getInstance().signOut()
+                        currentScreen = "login"
+                    }
+                )
             }
         }
     }
