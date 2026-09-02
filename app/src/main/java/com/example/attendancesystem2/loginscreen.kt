@@ -13,10 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
@@ -48,7 +48,7 @@ fun LoginScreen(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(
+                    listOf(
                         Color(0xFF111A2A),
                         background,
                         Color(0xFF080C14)
@@ -87,9 +87,9 @@ fun LoginScreen(
                         RoundedCornerShape(28.dp)
                     )
                     .border(
-                        width = 1.dp,
-                        color = Color.White.copy(alpha = 0.08f),
-                        shape = RoundedCornerShape(28.dp)
+                        1.dp,
+                        Color.White.copy(alpha = 0.08f),
+                        RoundedCornerShape(28.dp)
                     )
                     .padding(24.dp)
             ) {
@@ -113,8 +113,7 @@ fun LoginScreen(
 
                 Text(
                     text = "Login as",
-                    color = white,
-                    fontSize = 16.sp
+                    color = white
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
@@ -180,23 +179,6 @@ fun LoginScreen(
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
                         imeAction = ImeAction.Next
-                    ),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = gold,
-                        unfocusedBorderColor =
-                            Color.White.copy(alpha = 0.15f),
-
-                        focusedContainerColor = fieldColor,
-                        unfocusedContainerColor = fieldColor,
-
-                        focusedTextColor = white,
-                        unfocusedTextColor = white,
-
-                        focusedLabelColor = gold,
-                        unfocusedLabelColor = gray,
-
-                        cursorColor = gold
                     )
                 )
 
@@ -215,29 +197,9 @@ fun LoginScreen(
                     singleLine = true,
                     visualTransformation =
                         PasswordVisualTransformation(),
-
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done
-                    ),
-
-                    shape = RoundedCornerShape(15.dp),
-
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = gold,
-                        unfocusedBorderColor =
-                            Color.White.copy(alpha = 0.15f),
-
-                        focusedContainerColor = fieldColor,
-                        unfocusedContainerColor = fieldColor,
-
-                        focusedTextColor = white,
-                        unfocusedTextColor = white,
-
-                        focusedLabelColor = gold,
-                        unfocusedLabelColor = gray,
-
-                        cursorColor = gold
                     )
                 )
 
@@ -255,71 +217,49 @@ fun LoginScreen(
                 }
 
                 Button(
-
                     onClick = {
 
                         val cleanEmail = email.trim()
                         val cleanPassword = password.trim()
 
-                        // EMAIL VALIDATION
-
                         if (cleanEmail.isEmpty()) {
-
-                            errorMessage =
-                                "Please enter your email"
-
+                            errorMessage = "Enter your email"
                             return@Button
                         }
 
-                        if (
-                            !Patterns.EMAIL_ADDRESS
+                        if (!Patterns.EMAIL_ADDRESS
                                 .matcher(cleanEmail)
                                 .matches()
                         ) {
 
-                            errorMessage =
-                                "Please enter a valid email address"
-
+                            errorMessage = "Enter a valid email address"
                             return@Button
                         }
-
-                        // PASSWORD VALIDATION
 
                         if (cleanPassword.isEmpty()) {
-
-                            errorMessage =
-                                "Please enter your password"
-
+                            errorMessage = "Enter your password"
                             return@Button
                         }
-
-                        // START LOADING
 
                         loading = true
                         errorMessage = ""
-
-                        // FIREBASE LOGIN
 
                         auth.signInWithEmailAndPassword(
                             cleanEmail,
                             cleanPassword
                         )
-
                             .addOnSuccessListener {
 
                                 loading = false
 
-                                // LOGIN SUCCESSFUL
-
                                 onLoginSuccess(selectedRole)
                             }
-
                             .addOnFailureListener { exception ->
 
                                 loading = false
 
                                 errorMessage =
-                                    exception.message
+                                    exception.localizedMessage
                                         ?: "Login failed. Please try again."
                             }
                     },
@@ -334,10 +274,7 @@ fun LoginScreen(
 
                     colors = ButtonDefaults.buttonColors(
                         containerColor = gold,
-                        contentColor = Color(0xFF101722),
-
-                        disabledContainerColor =
-                            gold.copy(alpha = 0.6f)
+                        contentColor = Color(0xFF101722)
                     )
                 ) {
 
@@ -345,7 +282,7 @@ fun LoginScreen(
 
                         CircularProgressIndicator(
                             modifier = Modifier.size(28.dp),
-                            color = Color(0xFF101722),
+                            color = Color.Black,
                             strokeWidth = 3.dp
                         )
 
@@ -375,12 +312,8 @@ fun LoginScreen(
                         text = "Register",
                         color = gold,
                         fontWeight = FontWeight.Bold,
-
                         modifier = Modifier.clickable {
-
-                            if (!loading) {
-                                onRegisterClick()
-                            }
+                            onRegisterClick()
                         }
                     )
                 }
