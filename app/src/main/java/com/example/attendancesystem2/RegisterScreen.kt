@@ -185,7 +185,29 @@ fun RegisterScreen(
                                 if (task.isSuccessful) {
                                     val uid = auth.currentUser?.uid ?: ""
                                     val deviceId = DeviceUtils.getDeviceId(context)
+com.google.firebase.messaging.FirebaseMessaging.getInstance().token
+    .addOnCompleteListener { tokenTask ->
+        val fcmToken = if (tokenTask.isSuccessful) tokenTask.result else ""
 
+        UserRepository.createProfile(
+            profile = UserProfile(
+                uid = uid,
+                name = name.trim(),
+                email = email.trim(),
+                role = selectedRole,
+                deviceId = deviceId,
+                fcmToken = fcmToken
+            ),
+            onSuccess = {
+                loading = false
+                onRegisterSuccess()
+            },
+            onFailure = { error ->
+                loading = false
+                message = "Account created, but profile setup failed: $error"
+            }
+        )
+    }
                                     UserRepository.createProfile(
                                         profile = UserProfile(
                                             uid = uid,
