@@ -104,13 +104,18 @@ fun AttendanceApp() {
             // LECTURER DASHBOARD
             "lecturerDashboard" -> {
 
-                LecturerDashboard(
+    LecturerDashboard(
 
-                    onLogout = {
-                        FirebaseAuth.getInstance().signOut()
-                        currentScreen = "login"
-                    }
-                )
+        onLogout = {
+            FirebaseAuth.getInstance().signOut()
+            currentScreen = "login"
+        },
+
+        onCreateAttendance = {
+            currentScreen = "createAttendance"
+        }
+    )
+}
             }
         }
     }
