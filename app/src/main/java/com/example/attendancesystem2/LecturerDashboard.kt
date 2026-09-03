@@ -33,7 +33,8 @@ private val LecturerGray = Color(0xFF9BA5B5)
 @Composable
 fun LecturerDashboard(
     onLogout: () -> Unit,
-    onCreateAttendance: () -> Unit
+    onCreateAttendance: () -> Unit,
+    onOpenAdmin: () -> Unit
 ) {
 
     Column(
