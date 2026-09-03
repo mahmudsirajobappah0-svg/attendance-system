@@ -120,7 +120,24 @@ fun LecturerDashboard(
                 fontWeight = FontWeight.Bold
             )
         }
+      Spacer(modifier = Modifier.height(15.dp))
 
+OutlinedButton(
+    onClick = onOpenAdmin,
+    modifier = Modifier
+        .fillMaxWidth()
+        .height(55.dp),
+    shape = RoundedCornerShape(18.dp),
+    colors = ButtonDefaults.outlinedButtonColors(
+        contentColor = LecturerGold
+    )
+) {
+    Text(
+        text = "Reset Student Device",
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium
+    )
+}
         Spacer(modifier = Modifier.weight(1f))
 
         OutlinedButton(
