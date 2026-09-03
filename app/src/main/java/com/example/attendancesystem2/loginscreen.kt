@@ -132,6 +132,32 @@ fun LoginScreen(
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
+                Text(
+    text = "Forgot password?",
+    color = gold,
+    fontSize = 13.sp,
+    modifier = Modifier
+        .align(Alignment.End)
+        .clickable {
+            if (email.isBlank()) {
+                message = "Enter your email above first, then tap this again"
+                isError = true
+            } else {
+                auth.sendPasswordResetEmail(email.trim())
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            message = "Password reset email sent — check your inbox"
+                            isError = false
+                        } else {
+                            message = task.exception?.message ?: "Failed to send reset email"
+                            isError = true
+                        }
+                    }
+            }
+        }
+)
+
+Spacer(modifier = Modifier.height(15.dp))
 
                 if (message.isNotEmpty()) {
                     Text(
