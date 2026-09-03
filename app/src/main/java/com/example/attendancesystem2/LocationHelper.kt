@@ -8,7 +8,7 @@ import android.os.Looper
 import com.google.android.gms.location.CancellationTokenSource
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-
+import com.google.android.gms.tasks.CancellationTokenSource
 object LocationHelper {
 
     @SuppressLint("MissingPermission")
