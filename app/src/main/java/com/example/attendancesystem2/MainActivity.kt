@@ -54,16 +54,22 @@ class MainActivity : FragmentActivity() {
                     AttendanceHistoryScreen(onBack = { currentScreen = "studentDashboard" })
                 }
 
-                "lecturerDashboard" -> {
-                    LecturerDashboard(
-                        onLogout = {
-                            FirebaseAuth.getInstance().signOut()
-                            currentScreen = "login"
-                        },
-                        onCreateAttendance = { currentScreen = "createAttendance" }
-                    )
-                }
+              "lecturerDashboard" -> {
+    LecturerDashboard(
+        onLogout = {
+            FirebaseAuth.getInstance().signOut()
+            currentScreen = "login"
+        },
+        onCreateAttendance = { currentScreen = "createAttendance" },
+        onOpenAdmin = { currentScreen = "admin" }
+    )
+}
 
+"admin" -> {
+    AdminScreen(
+        onBack = { currentScreen = "lecturerDashboard" }
+    )
+}
                 "createAttendance" -> {
                     CreateAttendanceScreen(onBack = { currentScreen = "lecturerDashboard" })
                 }
