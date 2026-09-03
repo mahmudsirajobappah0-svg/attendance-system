@@ -19,7 +19,10 @@
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-feature android:name="android.hardware.camera" android:required="false" />
     <application
-
+<activity
+    android:name="com.journeyapps.barcodescanner.CaptureActivity"
+    android:screenOrientation="portrait"
+    tools:replace="screenOrientation" />
         android:allowBackup="true"
 
         android:label="Attendance System"
