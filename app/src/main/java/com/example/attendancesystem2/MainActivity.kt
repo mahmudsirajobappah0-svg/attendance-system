@@ -8,7 +8,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue 
 import androidx.fragment.app.FragmentActivity
 import com.google.firebase.auth.FirebaseAuth
-
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
