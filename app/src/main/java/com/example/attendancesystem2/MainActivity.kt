@@ -1,22 +1,21 @@
 package com.example.attendancesystem2
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.fragment.app.FragmentActivity
 import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             var currentScreen by remember { mutableStateOf("login") }
 
             when (currentScreen) {
-            
                 "login" -> {
                     LoginScreen(
                         onLoginSuccess = { role ->
@@ -52,9 +51,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 "history" -> {
-                    AttendanceHistoryScreen(
-                        onBack = { currentScreen = "studentDashboard" }
-                    )
+                    AttendanceHistoryScreen(onBack = { currentScreen = "studentDashboard" })
                 }
 
                 "lecturerDashboard" -> {
@@ -68,9 +65,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 "createAttendance" -> {
-                    CreateAttendanceScreen(
-                        onBack = { currentScreen = "lecturerDashboard" }
-                    )
+                    CreateAttendanceScreen(onBack = { currentScreen = "lecturerDashboard" })
                 }
             }
         }
