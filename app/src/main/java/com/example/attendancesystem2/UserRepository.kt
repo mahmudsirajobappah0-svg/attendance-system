@@ -50,3 +50,6 @@ object UserRepository {
             .addOnFailureListener { onDone() }
     }
 }
+fun updateFcmToken(uid: String, token: String) {
+    usersRef.document(uid).update("fcmToken", token)
+}
