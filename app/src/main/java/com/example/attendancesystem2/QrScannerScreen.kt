@@ -138,6 +138,33 @@ fun QrScannerScreen(
         else { status = "Camera permission is required to scan"; isError = true }
     }
 
+    fun proceedToBiometric() {
+        status = "Confirm it's you..."
+
+        if (!BiometricHelper.isBiometricAvailable(activity)) {
+            loading = false; isError = true
+            status = "No fingerprint/face unlock set up on this device. Set one up in device settings to mark attendance."
+            return
+        }
+
+        BiometricHelper.authenticate(
+            activity = activity,
+            onSuccess = {
+                status = "Opening camera..."
+                val hasCameraPermission = ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+
+                if (hasCameraPermission) launchScanner()
+                else cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            },
+            onError = { error ->
+                loading = false; isError = true
+                status = "Verification failed: $error"
+            }
+        )
+    }
+
     fun startVerifiedScan() {
         val uid = auth.currentUser?.uid ?: return
         val currentDeviceId = DeviceUtils.getDeviceId(context)
@@ -149,36 +176,8 @@ fun QrScannerScreen(
         UserRepository.getProfile(
             uid = uid,
             onSuccess = { profile ->
-                val proceedToBiometric = {
-                    status = "Confirm it's you..."
-
-                    if (!BiometricHelper.isBiometricAvailable(activity)) {
-                        loading = false; isError = true
-                        status = "No fingerprint/face unlock set up on this device. Set one up in device settings to mark attendance."
-                        return@let
-                    }
-
-                    BiometricHelper.authenticate(
-                        activity = activity,
-                        onSuccess = {
-                            status = "Opening camera..."
-                            val hasCameraPermission = ContextCompat.checkSelfPermission(
-                                context, Manifest.permission.CAMERA
-                            ) == PackageManager.PERMISSION_GRANTED
-
-                            if (hasCameraPermission) launchScanner()
-                            else cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        },
-                        onError = { error ->
-                            loading = false; isError = true
-                            status = "Verification failed: $error"
-                        }
-                    )
-                }
-
                 when {
                     profile.deviceId.isEmpty() -> {
-                        // First-time use: bind this device to the account
                         UserRepository.bindDeviceIfEmpty(uid, currentDeviceId) {
                             proceedToBiometric()
                         }
