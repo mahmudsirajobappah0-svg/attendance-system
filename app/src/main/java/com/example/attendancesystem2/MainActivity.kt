@@ -9,47 +9,27 @@ import androidx.compose.runtime.setValue
 import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContent {
-
             var currentScreen by mutableStateOf("login")
 
             when (currentScreen) {
-
                 "login" -> {
                     LoginScreen(
                         onLoginSuccess = { role ->
-
-                            currentScreen =
-                                if (role == "lecturer") {
-                                    "lecturerDashboard"
-                                } else {
-                                    "studentDashboard"
-                                }
+                            currentScreen = if (role == "lecturer") "lecturerDashboard" else "studentDashboard"
                         },
-
-                        onRegisterClick = {
-                            currentScreen = "register"
-                        }
+                        onRegisterClick = { currentScreen = "register" }
                     )
                 }
-
 
                 "register" -> {
                     RegisterScreen(
-                        onRegisterSuccess = {
-                            currentScreen = "login"
-                        },
-
-                        onBackToLogin = {
-                            currentScreen = "login"
-                        }
+                        onRegisterSuccess = { currentScreen = "login" },
+                        onBackToLogin = { currentScreen = "login" }
                     )
                 }
-
 
                 "studentDashboard" -> {
                     StudentDashboard(
@@ -57,38 +37,39 @@ class MainActivity : ComponentActivity() {
                             FirebaseAuth.getInstance().signOut()
                             currentScreen = "login"
                         },
-
-                        onScanAttendance = {
-                            currentScreen = "scanner"
-                        }
+                        onScanAttendance = { currentScreen = "scanner" },
+                        onViewHistory = { currentScreen = "history" }
                     )
                 }
-
 
                 "scanner" -> {
                     QrScannerScreen(
-                        onBack = {
-                            currentScreen = "studentDashboard"
-                        },
-
-                        onAttendanceMarked = {
-                            currentScreen = "studentDashboard"
-                        }
+                        onBack = { currentScreen = "studentDashboard" },
+                        onAttendanceMarked = { currentScreen = "studentDashboard" }
                     )
                 }
 
+                "history" -> {
+                    AttendanceHistoryScreen(
+                        onBack = { currentScreen = "studentDashboard" }
+                    )
+                }
 
-               "lecturerDashboard" -> {
-    LecturerDashboard(
-        onLogout = {
-            FirebaseAuth.getInstance().signOut()
-            currentScreen = "login"
-        },
-        onCreateAttendance = {
-            currentScreen = "createAttendance" // or whatever screen/action this should trigger
-        }
-    )
-}
+                "lecturerDashboard" -> {
+                    LecturerDashboard(
+                        onLogout = {
+                            FirebaseAuth.getInstance().signOut()
+                            currentScreen = "login"
+                        },
+                        onCreateAttendance = { currentScreen = "createAttendance" }
+                    )
+                }
+
+                "createAttendance" -> {
+                    CreateAttendanceScreen(
+                        onBack = { currentScreen = "lecturerDashboard" }
+                    )
+                }
             }
         }
     }
