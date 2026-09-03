@@ -50,6 +50,21 @@ fun AttendanceHistoryScreen(onBack: () -> Unit) {
         Spacer(modifier = Modifier.height(20.dp))
 
         Card(
+            if (!loading && records.isNotEmpty() && percentage < 75) {
+    Spacer(modifier = Modifier.height(12.dp))
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF2A1515))
+    ) {
+        Text(
+            text = "⚠ Your attendance is below 75%. Keep it up to avoid falling below the required minimum.",
+            color = Color(0xFFFF6B6B),
+            fontSize = 13.sp,
+            modifier = Modifier.padding(14.dp)
+        )
+    }
+}
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = CardColor)
