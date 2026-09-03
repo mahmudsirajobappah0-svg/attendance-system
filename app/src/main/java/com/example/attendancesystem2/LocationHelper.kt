@@ -5,10 +5,9 @@ import android.content.Context
 import android.location.Location
 import android.os.Handler
 import android.os.Looper
-import com.google.android.gms.location.CancellationTokenSource
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
+
 object LocationHelper {
 
     @SuppressLint("MissingPermission")
@@ -18,25 +17,27 @@ object LocationHelper {
         onFailure: () -> Unit
     ) {
         val fusedClient = LocationServices.getFusedLocationProviderClient(context)
-        val cancellationSource = CancellationTokenSource()
         val handler = Handler(Looper.getMainLooper())
         var completed = false
 
-        // Safety net: if nothing resolves within 15s, cancel and fall back
+        fun finishWithLastLocation() {
+            fusedClient.lastLocation
+                .addOnSuccessListener { last ->
+                    if (last != null) onSuccess(last) else onFailure()
+                }
+                .addOnFailureListener { onFailure() }
+        }
+
+        // Safety net: if nothing resolves within 15s, fall back to last known location
         val timeoutRunnable = Runnable {
             if (!completed) {
                 completed = true
-                cancellationSource.cancel()
-                fusedClient.lastLocation
-                    .addOnSuccessListener { last ->
-                        if (last != null) onSuccess(last) else onFailure()
-                    }
-                    .addOnFailureListener { onFailure() }
+                finishWithLastLocation()
             }
         }
         handler.postDelayed(timeoutRunnable, 15000L)
 
-        fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, cancellationSource.token)
+        fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
             .addOnSuccessListener { location ->
                 if (!completed) {
                     completed = true
