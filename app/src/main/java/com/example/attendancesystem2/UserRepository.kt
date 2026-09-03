@@ -8,6 +8,7 @@ data class UserProfile(
     val email: String = "",
     val role: String = "student",
     val deviceId: String = ""
+    val fcmToken: String = ""
 )
 
 object UserRepository {
