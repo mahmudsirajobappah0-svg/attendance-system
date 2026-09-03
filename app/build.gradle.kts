@@ -46,6 +46,8 @@ android {
 }
 
 dependencies {
+implementation("androidx.biometric:biometric:1.1.0")
+implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
