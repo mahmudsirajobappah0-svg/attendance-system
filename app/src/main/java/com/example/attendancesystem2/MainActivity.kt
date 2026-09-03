@@ -78,14 +78,17 @@ class MainActivity : ComponentActivity() {
                 }
 
 
-                "lecturerDashboard" -> {
-                    LecturerDashboard(
-                        onLogout = {
-                            FirebaseAuth.getInstance().signOut()
-                            currentScreen = "login"
-                        }
-                    )
-                }
+               "lecturerDashboard" -> {
+    LecturerDashboard(
+        onLogout = {
+            FirebaseAuth.getInstance().signOut()
+            currentScreen = "login"
+        },
+        onCreateAttendance = {
+            currentScreen = "createAttendance" // or whatever screen/action this should trigger
+        }
+    )
+}
             }
         }
     }
