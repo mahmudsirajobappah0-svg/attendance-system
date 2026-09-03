@@ -26,10 +26,8 @@ fun LoginScreen(
     onLoginSuccess: (String) -> Unit,
     onRegisterClick: () -> Unit
 ) {
-
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var selectedRole by remember { mutableStateOf("student") }
 
     var loading by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
@@ -49,141 +47,47 @@ fun LoginScreen(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF111A2A),
-                        background,
-                        Color(0xFF080C14)
-                    )
+                    colors = listOf(Color(0xFF111A2A), background, Color(0xFF080C14))
                 )
             )
             .padding(24.dp)
     ) {
-
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-            Text(
-                text = "ATTENDANCE",
-                color = gold,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Text(text = "ATTENDANCE", color = gold, fontSize = 28.sp, fontWeight = FontWeight.Bold)
 
             Spacer(modifier = Modifier.height(5.dp))
 
-            Text(
-                text = "Smart Attendance System",
-                color = gray,
-                fontSize = 14.sp
-            )
+            Text(text = "Smart Attendance System", color = gray, fontSize = 14.sp)
 
             Spacer(modifier = Modifier.height(30.dp))
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        cardColor,
-                        RoundedCornerShape(28.dp)
-                    )
-                    .border(
-                        1.dp,
-                        Color.White.copy(alpha = 0.08f),
-                        RoundedCornerShape(28.dp)
-                    )
+                    .background(cardColor, RoundedCornerShape(28.dp))
+                    .border(1.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(28.dp))
                     .padding(24.dp)
             ) {
-
-                Text(
-                    text = "Welcome Back",
-                    color = white,
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Text(text = "Welcome Back", color = white, fontSize = 26.sp, fontWeight = FontWeight.Bold)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = "Login to continue",
-                    color = gray,
-                    fontSize = 14.sp
-                )
+                Text(text = "Login to continue", color = gray, fontSize = 14.sp)
 
                 Spacer(modifier = Modifier.height(22.dp))
 
-                Text(
-                    text = "Login as",
-                    color = white,
-                    fontSize = 15.sp
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-
-                    Button(
-                        onClick = {
-                            selectedRole = "student"
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor =
-                                if (selectedRole == "student") gold
-                                else fieldColor,
-
-                            contentColor =
-                                if (selectedRole == "student") Color.Black
-                                else white
-                        )
-                    ) {
-                        Text("Student")
-                    }
-
-                    Button(
-                        onClick = {
-                            selectedRole = "lecturer"
-                        },
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor =
-                                if (selectedRole == "lecturer") gold
-                                else fieldColor,
-
-                            contentColor =
-                                if (selectedRole == "lecturer") Color.Black
-                                else white
-                        )
-                    ) {
-                        Text("Lecturer")
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
                 OutlinedTextField(
                     value = email,
-                    onValueChange = {
-                        email = it
-                        message = ""
-                    },
+                    onValueChange = { email = it; message = "" },
                     modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text("Email")
-                    },
-                    placeholder = {
-                        Text("example@gmail.com")
-                    },
+                    label = { Text("Email") },
+                    placeholder = { Text("example@gmail.com") },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = gold,
@@ -204,23 +108,13 @@ fun LoginScreen(
 
                 OutlinedTextField(
                     value = password,
-                    onValueChange = {
-                        password = it
-                        message = ""
-                    },
+                    onValueChange = { password = it; message = "" },
                     modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text("Password")
-                    },
-                    placeholder = {
-                        Text("Enter your password")
-                    },
+                    label = { Text("Password") },
+                    placeholder = { Text("Enter your password") },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = gold,
@@ -240,122 +134,83 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(15.dp))
 
                 if (message.isNotEmpty()) {
-
                     Text(
                         text = message,
                         color = if (isError) Color(0xFFFF6B6B) else Color(0xFF66E08A),
                         fontSize = 13.sp
                     )
-
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
                 Button(
                     onClick = {
-
                         val cleanEmail = email.trim()
-                        val cleanPassword = password
 
                         if (cleanEmail.isEmpty()) {
-                            message = "Please enter your email"
-                            isError = true
-                            return@Button
+                            message = "Please enter your email"; isError = true; return@Button
                         }
-
                         if (!Patterns.EMAIL_ADDRESS.matcher(cleanEmail).matches()) {
-                            message = "Please enter a valid email address"
-                            isError = true
-                            return@Button
+                            message = "Please enter a valid email address"; isError = true; return@Button
                         }
-
-                        if (cleanPassword.isEmpty()) {
-                            message = "Please enter your password"
-                            isError = true
-                            return@Button
+                        if (password.isEmpty()) {
+                            message = "Please enter your password"; isError = true; return@Button
                         }
 
                         loading = true
                         message = ""
 
-                        auth.signInWithEmailAndPassword(
-                            cleanEmail,
-                            cleanPassword
-                        ).addOnCompleteListener { task ->
+                        auth.signInWithEmailAndPassword(cleanEmail, password)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val uid = auth.currentUser?.uid ?: ""
 
-                            loading = false
-
-                            if (task.isSuccessful) {
-
-                                message = "Login successful!"
-
-                                isError = false
-
-                                // GO TO DASHBOARD
-                                onLoginSuccess(selectedRole)
-
-                            } else {
-
-                                isError = true
-
-                                message =
-                                    "LOGIN FAILED: " +
-                                    (task.exception?.localizedMessage
-                                        ?: "Unknown error")
+                                    UserRepository.getProfile(
+                                        uid = uid,
+                                        onSuccess = { profile ->
+                                            loading = false
+                                            isError = false
+                                            message = "Login successful!"
+                                            onLoginSuccess(profile.role)
+                                        },
+                                        onFailure = { error ->
+                                            loading = false
+                                            isError = true
+                                            message = "Could not load your profile: $error"
+                                        }
+                                    )
+                                } else {
+                                    loading = false
+                                    isError = true
+                                    message = "LOGIN FAILED: " +
+                                        (task.exception?.localizedMessage ?: "Unknown error")
+                                }
                             }
-                        }
                     },
-
                     enabled = !loading,
-
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(58.dp),
-
+                    modifier = Modifier.fillMaxWidth().height(58.dp),
                     shape = RoundedCornerShape(18.dp),
-
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = gold,
-                        contentColor = Color(0xFF101722)
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = gold, contentColor = Color(0xFF101722))
                 ) {
-
                     if (loading) {
-
                         CircularProgressIndicator(
                             modifier = Modifier.size(28.dp),
                             color = Color(0xFF101722),
                             strokeWidth = 3.dp
                         )
-
                     } else {
-
-                        Text(
-                            text = "Login",
-                            fontSize = 17.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Text(text = "Login", fontSize = 17.sp, fontWeight = FontWeight.Bold)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-
-                    Text(
-                        text = "Don't have an account? ",
-                        color = gray
-                    )
-
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Text(text = "Don't have an account? ", color = gray)
                     Text(
                         text = "Register",
                         color = gold,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.clickable {
-                            onRegisterClick()
-                        }
+                        modifier = Modifier.clickable { onRegisterClick() }
                     )
                 }
             }
