@@ -10,47 +10,67 @@ import com.google.android.gms.location.Priority
 
 object LocationHelper {
 
+    // Reject fixes worse than this; keep trying until we get something usable or time out
+    private const val ACCEPTABLE_ACCURACY_METERS = 30f
+    private const val MAX_WAIT_MS = 20000L
+    private const val POLL_INTERVAL_MS = 2000L
+
     @SuppressLint("MissingPermission")
     fun getCurrentLocation(
         context: Context,
         onSuccess: (Location) -> Unit,
-        onFailure: () -> Unit
+        onFailure: () -> Unit,
+        onProgress: ((attempt: Int, bestAccuracy: Float?) -> Unit)? = null
     ) {
         val fusedClient = LocationServices.getFusedLocationProviderClient(context)
         val handler = Handler(Looper.getMainLooper())
         var completed = false
+        var bestSoFar: Location? = null
+        var attempt = 0
+        val startTime = System.currentTimeMillis()
 
-        fun finishWithLastLocation() {
-            fusedClient.lastLocation
-                .addOnSuccessListener { last ->
-                    if (last != null) onSuccess(last) else onFailure()
-                }
-                .addOnFailureListener { onFailure() }
+        fun finish(location: Location?) {
+            if (completed) return
+            completed = true
+            if (location != null) onSuccess(location) else onFailure()
         }
 
-        // Safety net: if nothing resolves within 15s, fall back to last known location
-        val timeoutRunnable = Runnable {
-            if (!completed) {
-                completed = true
-                finishWithLastLocation()
-            }
-        }
-        handler.postDelayed(timeoutRunnable, 15000L)
+        fun tryOnce() {
+            if (completed) return
+            attempt++
 
-        fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener { location ->
-                if (!completed) {
-                    completed = true
-                    handler.removeCallbacks(timeoutRunnable)
-                    if (location != null) onSuccess(location) else onFailure()
+            fusedClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener { location ->
+                    if (completed) return@addOnSuccessListener
+
+                    if (location != null) {
+                        if (bestSoFar == null || location.accuracy < bestSoFar!!.accuracy) {
+                            bestSoFar = location
+                        }
+                    }
+
+                    onProgress?.invoke(attempt, bestSoFar?.accuracy)
+
+                    val goodEnough = bestSoFar != null && bestSoFar!!.accuracy <= ACCEPTABLE_ACCURACY_METERS
+                    val timedOut = System.currentTimeMillis() - startTime >= MAX_WAIT_MS
+
+                    when {
+                        goodEnough -> finish(bestSoFar)
+                        timedOut -> finish(bestSoFar) // use best we found, even if imperfect
+                        else -> handler.postDelayed({ tryOnce() }, POLL_INTERVAL_MS)
+                    }
                 }
-            }
-            .addOnFailureListener {
-                if (!completed) {
-                    completed = true
-                    handler.removeCallbacks(timeoutRunnable)
-                    onFailure()
+                .addOnFailureListener {
+                    if (completed) return@addOnFailureListener
+                    val timedOut = System.currentTimeMillis() - startTime >= MAX_WAIT_MS
+                    if (timedOut) {
+                        finish(bestSoFar)
+                    } else {
+                        handler.postDelayed({ tryOnce() }, POLL_INTERVAL_MS)
+                    }
                 }
-            }
+        }
+
+        tryOnce()
     }
 }
