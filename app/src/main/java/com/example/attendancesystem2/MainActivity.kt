@@ -1,25 +1,28 @@
 package com.example.attendancesystem2
 
+import android.content.pm.PackageManager
 import android.os.Bundle
-import androidx.activity.compose.setContent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue 
-import androidx.fragment.app.FragmentActivity
-import com.google.firebase.auth.FirebaseAuth
+import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import com.google.firebase.auth.FirebaseAuth
+
 class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         if (android.os.Build.VERSION.SDK_INT >= 33) {
-    if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
-        != PackageManager.PERMISSION_GRANTED
-    ) {
-        ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
-    }
-}
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+            }
+        }
+
         setContent {
             var currentScreen by remember { mutableStateOf("login") }
 
@@ -62,24 +65,23 @@ class MainActivity : FragmentActivity() {
                     AttendanceHistoryScreen(onBack = { currentScreen = "studentDashboard" })
                 }
 
-              "lecturerDashboard" -> {
-    LecturerDashboard(
-        onLogout = {
-            FirebaseAuth.getInstance().signOut()
-            currentScreen = "login"
-        },
-        onCreateAttendance = { currentScreen = "createAttendance" },
-        onOpenAdmin = { currentScreen = "admin" }
-    )
-}
+                "lecturerDashboard" -> {
+                    LecturerDashboard(
+                        onLogout = {
+                            FirebaseAuth.getInstance().signOut()
+                            currentScreen = "login"
+                        },
+                        onCreateAttendance = { currentScreen = "createAttendance" },
+                        onOpenAdmin = { currentScreen = "admin" }
+                    )
+                }
 
-"admin" -> {
-    AdminScreen(
-        onBack = { currentScreen = "lecturerDashboard" }
-    )
-}
                 "createAttendance" -> {
                     CreateAttendanceScreen(onBack = { currentScreen = "lecturerDashboard" })
+                }
+
+                "admin" -> {
+                    AdminScreen(onBack = { currentScreen = "lecturerDashboard" })
                 }
             }
         }
