@@ -47,7 +47,7 @@ android {
 
 dependencies {
 implementation("com.google.firebase:firebase-messaging-ktx")
-implementation("androidx.work:work-runtime-ktx:2.10.0")
+implementation("androidx.work:work-runtime-ktx:2.9.1")
 implementation("androidx.biometric:biometric:1.1.0")
 implementation("androidx.fragment:fragment-ktx:1.8.5")
     implementation("com.google.zxing:core:3.5.3")
