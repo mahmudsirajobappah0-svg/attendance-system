@@ -7,7 +7,7 @@ data class UserProfile(
     val name: String = "",
     val email: String = "",
     val role: String = "student",
-    val deviceId: String = ""
+    val deviceId: String = "",
     val fcmToken: String = ""
 )
 
@@ -50,7 +50,8 @@ object UserRepository {
             .addOnSuccessListener { onDone() }
             .addOnFailureListener { onDone() }
     }
-}
-fun updateFcmToken(uid: String, token: String) {
-    usersRef.document(uid).update("fcmToken", token)
+
+    fun updateFcmToken(uid: String, token: String) {
+        usersRef.document(uid).update("fcmToken", token)
+    }
 }
