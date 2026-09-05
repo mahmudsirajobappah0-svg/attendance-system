@@ -29,7 +29,9 @@ fun AttendanceHistoryScreen(onBack: () -> Unit) {
     var loading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
+    fun loadHistory() {
+        loading = true
+        errorMessage = ""
         val studentId = auth.currentUser?.uid ?: ""
         FirestoreRepository.getStudentHistory(
             studentId = studentId,
@@ -38,14 +40,23 @@ fun AttendanceHistoryScreen(onBack: () -> Unit) {
         )
     }
 
-    val percentage = if (records.isNotEmpty()) {
-        (records.count { it.status == "Present" } * 100) / records.size
-    } else 0
+    LaunchedEffect(Unit) { loadHistory() }
+
+    val percentage = if (records.isNotEmpty()) (records.count { it.status == "Present" } * 100) / records.size else 0
 
     Column(modifier = Modifier.fillMaxSize().background(Background).padding(24.dp)) {
         Spacer(modifier = Modifier.height(20.dp))
 
-        Text(text = "Attendance History", color = White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Attendance History", color = White, fontSize = 26.sp, fontWeight = FontWeight.Bold)
+            IconButton(onClick = { loadHistory() }) {
+                Text(text = "⟳", color = Gold, fontSize = 22.sp)
+            }
+        }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -89,7 +100,13 @@ fun AttendanceHistoryScreen(onBack: () -> Unit) {
                     }
                 }
                 errorMessage.isNotEmpty() -> {
-                    Text(text = errorMessage, color = Color(0xFFFF6B6B))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(text = errorMessage, color = Color(0xFFFF6B6B))
+                        Spacer(modifier = Modifier.height(10.dp))
+                        OutlinedButton(onClick = { loadHistory() }) {
+                            Text("Retry", color = Gold)
+                        }
+                    }
                 }
                 records.isEmpty() -> {
                     Text(text = "No attendance records yet", color = Gray, modifier = Modifier.padding(top = 20.dp))
