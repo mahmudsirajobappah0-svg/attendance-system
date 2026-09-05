@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.auth.FirebaseAuth
 
 private val StudentBackground = Color(0xFF080D17)
 private val StudentCard = Color(0xFF111927)
@@ -26,27 +25,17 @@ fun StudentDashboard(
     onScanAttendance: () -> Unit,
     onViewHistory: () -> Unit
 ) {
-    val email = FirebaseAuth.getInstance().currentUser?.email ?: "Student"
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF111A2A), StudentBackground, Color(0xFF080C14))
-                )
-            )
+            .background(Brush.verticalGradient(colors = listOf(Color(0xFF111A2A), StudentBackground, Color(0xFF080C14))))
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(35.dp))
-
         Text(text = "Welcome back 👋", color = StudentGray, fontSize = 16.sp)
-
         Spacer(modifier = Modifier.height(6.dp))
-
-        Text(text = email, color = StudentWhite, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-
+        Text(text = "Student Dashboard", color = StudentWhite, fontSize = 22.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(35.dp))
 
         Card(
