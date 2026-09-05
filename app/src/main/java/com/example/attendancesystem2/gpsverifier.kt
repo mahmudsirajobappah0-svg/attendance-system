@@ -3,32 +3,22 @@ package com.example.attendancesystem2
 import android.location.Location
 
 object GPSVerifier {
-
     fun isWithinAllowedDistance(
-
-        studentLatitude: Double,
-        studentLongitude: Double,
-
+        studentLocation: Location,
         lecturerLatitude: Double,
         lecturerLongitude: Double,
-
-        allowedDistanceMeters: Float = 100f
-
+        allowedDistanceMeters: Float = 150f
     ): Boolean {
-
         val result = FloatArray(1)
-
         Location.distanceBetween(
-
-            studentLatitude,
-            studentLongitude,
-
+            studentLocation.latitude,
+            studentLocation.longitude,
             lecturerLatitude,
             lecturerLongitude,
-
             result
         )
-
-        return result[0] <= allowedDistanceMeters
+        val distance = result[0]
+        val accuracyAllowance = studentLocation.accuracy.coerceAtMost(50f)
+        return distance <= (allowedDistanceMeters + accuracyAllowance)
     }
 }
