@@ -20,7 +20,7 @@ private val Gray = Color(0xFF9BA5B5)
 
 @Composable
 fun AdminScreen(onBack: () -> Unit) {
-    var email by remember { mutableStateOf("") }
+    var matricNo by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
     var loading by remember { mutableStateOf(false) }
@@ -30,24 +30,20 @@ fun AdminScreen(onBack: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(30.dp))
-
         Text(text = "Reset Student Device", color = White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-
         Spacer(modifier = Modifier.height(8.dp))
-
         Text(
             text = "Unlinks a student's account from their current device — use this if they lost or replaced their phone.",
             color = Gray,
             fontSize = 13.sp
         )
-
         Spacer(modifier = Modifier.height(25.dp))
 
         OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
+            value = matricNo,
+            onValueChange = { matricNo = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Student's email") },
+            label = { Text("Student's Matric/Staff ID") },
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Gold,
@@ -65,31 +61,21 @@ fun AdminScreen(onBack: () -> Unit) {
         Spacer(modifier = Modifier.height(15.dp))
 
         if (message.isNotEmpty()) {
-            Text(
-                text = message,
-                color = if (isError) Color(0xFFFF6B6B) else Color(0xFF66E08A),
-                fontSize = 13.sp
-            )
+            Text(text = message, color = if (isError) Color(0xFFFF6B6B) else Color(0xFF66E08A), fontSize = 13.sp)
             Spacer(modifier = Modifier.height(10.dp))
         }
 
         Button(
             onClick = {
-                if (email.isBlank()) {
-                    message = "Enter the student's email"; isError = true
-                    return@Button
-                }
+                if (matricNo.isBlank()) { message = "Enter the student's Matric/Staff ID"; isError = true; return@Button }
                 loading = true
-                FirestoreRepository.resetDeviceByEmail(
-                    email = email,
+                UserRepository.resetDeviceByMatricNo(
+                    matricNo = matricNo,
                     onSuccess = {
                         loading = false; isError = false
                         message = "Device reset. The student can now log in from a new device."
                     },
-                    onFailure = { error ->
-                        loading = false; isError = true
-                        message = error
-                    }
+                    onFailure = { error -> loading = false; isError = true; message = error }
                 )
             },
             enabled = !loading,
