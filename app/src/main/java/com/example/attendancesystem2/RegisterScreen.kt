@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 
 @Composable
 fun RegisterScreen(
@@ -28,7 +29,7 @@ fun RegisterScreen(
     val context = LocalContext.current
 
     var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
+    var matricNo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var selectedRole by remember { mutableStateOf("student") }
@@ -70,13 +71,9 @@ fun RegisterScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(30.dp))
-
             Text(text = "Create Account", color = white, fontSize = 30.sp, fontWeight = FontWeight.Bold)
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Text(text = "Create your attendance account", color = gray)
-
             Spacer(modifier = Modifier.height(30.dp))
 
             Column(
@@ -87,13 +84,9 @@ fun RegisterScreen(
                     .padding(24.dp)
             ) {
                 Text(text = "I am a", color = white, fontSize = 15.sp)
-
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Button(
                         onClick = { selectedRole = "student" },
                         modifier = Modifier.weight(1f),
@@ -127,10 +120,10 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(15.dp))
 
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = matricNo,
+                    onValueChange = { matricNo = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Email") },
+                    label = { Text(if (selectedRole == "student") "Matric Number" else "Staff ID") },
                     singleLine = true,
                     colors = fieldColors
                 )
@@ -168,7 +161,7 @@ fun RegisterScreen(
 
                 Button(
                     onClick = {
-                        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                        if (name.isEmpty() || matricNo.isEmpty() || password.isEmpty()) {
                             message = "Please fill all fields"
                             return@Button
                         }
@@ -180,51 +173,38 @@ fun RegisterScreen(
                         loading = true
                         message = ""
 
-                        auth.createUserWithEmailAndPassword(email, password)
+                        val authEmail = AuthIdentifierUtils.buildAuthEmail(matricNo)
+
+                        auth.createUserWithEmailAndPassword(authEmail, password)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     val uid = auth.currentUser?.uid ?: ""
                                     val deviceId = DeviceUtils.getDeviceId(context)
-com.google.firebase.messaging.FirebaseMessaging.getInstance().token
-    .addOnCompleteListener { tokenTask ->
-        val fcmToken = if (tokenTask.isSuccessful) tokenTask.result else ""
 
-        UserRepository.createProfile(
-            profile = UserProfile(
-                uid = uid,
-                name = name.trim(),
-                email = email.trim(),
-                role = selectedRole,
-                deviceId = deviceId,
-                fcmToken = fcmToken
-            ),
-            onSuccess = {
-                loading = false
-                onRegisterSuccess()
-            },
-            onFailure = { error ->
-                loading = false
-                message = "Account created, but profile setup failed: $error"
-            }
-        )
-    }
-                                    UserRepository.createProfile(
-                                        profile = UserProfile(
-                                            uid = uid,
-                                            name = name.trim(),
-                                            email = email.trim(),
-                                            role = selectedRole,
-                                            deviceId = deviceId
-                                        ),
-                                        onSuccess = {
-                                            loading = false
-                                            onRegisterSuccess()
-                                        },
-                                        onFailure = { error ->
-                                            loading = false
-                                            message = "Account created, but profile setup failed: $error"
+                                    FirebaseMessaging.getInstance().token
+                                        .addOnCompleteListener { tokenTask ->
+                                            val fcmToken = if (tokenTask.isSuccessful) tokenTask.result else ""
+
+                                            UserRepository.createProfile(
+                                                profile = UserProfile(
+                                                    uid = uid,
+                                                    name = name.trim(),
+                                                    matricNo = matricNo.trim(),
+                                                    authEmail = authEmail,
+                                                    role = selectedRole,
+                                                    deviceId = deviceId,
+                                                    fcmToken = fcmToken
+                                                ),
+                                                onSuccess = {
+                                                    loading = false
+                                                    onRegisterSuccess()
+                                                },
+                                                onFailure = { error ->
+                                                    loading = false
+                                                    message = "Account created, but profile setup failed: $error"
+                                                }
+                                            )
                                         }
-                                    )
                                 } else {
                                     loading = false
                                     message = task.exception?.message ?: "Registration failed"
