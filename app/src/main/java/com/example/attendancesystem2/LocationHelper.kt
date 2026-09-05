@@ -10,7 +10,6 @@ import com.google.android.gms.location.Priority
 
 object LocationHelper {
 
-    // Reject fixes worse than this; keep trying until we get something usable or time out
     private const val ACCEPTABLE_ACCURACY_METERS = 30f
     private const val MAX_WAIT_MS = 20000L
     private const val POLL_INTERVAL_MS = 2000L
@@ -56,21 +55,17 @@ object LocationHelper {
 
                     when {
                         goodEnough -> finish(bestSoFar)
-                        timedOut -> finish(bestSoFar) // use best we found, even if imperfect
+                        timedOut -> finish(bestSoFar)
                         else -> handler.postDelayed({ tryOnce() }, POLL_INTERVAL_MS)
                     }
                 }
                 .addOnFailureListener {
                     if (completed) return@addOnFailureListener
                     val timedOut = System.currentTimeMillis() - startTime >= MAX_WAIT_MS
-                    if (timedOut) {
-                        finish(bestSoFar)
-                    } else {
-                        handler.postDelayed({ tryOnce() }, POLL_INTERVAL_MS)
-                    }
+                    if (timedOut) finish(bestSoFar)
+                    else handler.postDelayed({ tryOnce() }, POLL_INTERVAL_MS)
                 }
         }
-
         tryOnce()
     }
 }
