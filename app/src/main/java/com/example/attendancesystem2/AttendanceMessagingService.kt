@@ -14,9 +14,7 @@ class AttendanceMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
-        if (uid != null) {
-            UserRepository.updateFcmToken(uid, token)
-        }
+        if (uid != null) UserRepository.updateFcmToken(uid, token)
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -24,23 +22,18 @@ class AttendanceMessagingService : FirebaseMessagingService() {
 
         val title = message.notification?.title ?: "Attendance Session Open"
         val body = message.notification?.body ?: "A new attendance session has started"
-
         val channelId = "attendance_channel"
         val manager = getSystemService(NotificationManager::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId, "Attendance Alerts", NotificationManager.IMPORTANCE_HIGH
-            )
+            val channel = NotificationChannel(channelId, "Attendance Alerts", NotificationManager.IMPORTANCE_HIGH)
             manager.createNotificationChannel(channel)
         }
 
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent, PendingIntent.FLAG_IMMUTABLE
-        )
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle(title)
