@@ -36,63 +36,27 @@ fun LecturerDashboard(
     onCreateAttendance: () -> Unit,
     onOpenAdmin: () -> Unit
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF111A2A),
-                        LecturerBackground,
-                        Color(0xFF080C14)
-                    )
-                )
-            )
+            .background(Brush.verticalGradient(colors = listOf(Color(0xFF111A2A), LecturerBackground, Color(0xFF080C14))))
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         Spacer(modifier = Modifier.height(35.dp))
-
-        Text(
-            text = "Welcome back 👋",
-            color = LecturerGray,
-            fontSize = 16.sp
-        )
-
+        Text(text = "Welcome back 👋", color = LecturerGray, fontSize = 16.sp)
         Spacer(modifier = Modifier.height(6.dp))
-
-        Text(
-            text = "Lecturer Dashboard",
-            color = LecturerWhite,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
-        )
-
+        Text(text = "Lecturer Dashboard", color = LecturerWhite, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(35.dp))
 
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = LecturerCard
-            )
+            colors = CardDefaults.cardColors(containerColor = LecturerCard)
         ) {
-
-            Column(
-                modifier = Modifier.padding(22.dp)
-            ) {
-
-                Text(
-                    text = "Attendance Management",
-                    color = LecturerWhite,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
+            Column(modifier = Modifier.padding(22.dp)) {
+                Text(text = "Attendance Management", color = LecturerWhite, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(10.dp))
-
                 Text(
                     text = "Create a new attendance session and allow students to scan the QR code.",
                     color = LecturerGray,
@@ -105,58 +69,33 @@ fun LecturerDashboard(
 
         Button(
             onClick = onCreateAttendance,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(60.dp),
+            modifier = Modifier.fillMaxWidth().height(60.dp),
             shape = RoundedCornerShape(18.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = LecturerGold,
-                contentColor = Color(0xFF101722)
-            )
+            colors = ButtonDefaults.buttonColors(containerColor = LecturerGold, contentColor = Color(0xFF101722))
         ) {
-
-            Text(
-                text = "Create Attendance QR",
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Text(text = "Create Attendance QR", fontSize = 17.sp, fontWeight = FontWeight.Bold)
         }
-      Spacer(modifier = Modifier.height(15.dp))
 
-OutlinedButton(
-    onClick = onOpenAdmin,
-    modifier = Modifier
-        .fillMaxWidth()
-        .height(55.dp),
-    shape = RoundedCornerShape(18.dp),
-    colors = ButtonDefaults.outlinedButtonColors(
-        contentColor = LecturerGold
-    )
-) {
-    Text(
-        text = "Reset Student Device",
-        fontSize = 16.sp,
-        fontWeight = FontWeight.Medium
-    )
-}
+        Spacer(modifier = Modifier.height(15.dp))
+
+        OutlinedButton(
+            onClick = onOpenAdmin,
+            modifier = Modifier.fillMaxWidth().height(55.dp),
+            shape = RoundedCornerShape(18.dp),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = LecturerGold)
+        ) {
+            Text(text = "Reset Student Device", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        }
+
         Spacer(modifier = Modifier.weight(1f))
 
         OutlinedButton(
             onClick = onLogout,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
+            modifier = Modifier.fillMaxWidth().height(55.dp),
             shape = RoundedCornerShape(18.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = LecturerGold
-            )
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = LecturerGold)
         ) {
-
-            Text(
-                text = "Logout",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Text(text = "Logout", fontSize = 16.sp, fontWeight = FontWeight.Medium)
         }
 
         Spacer(modifier = Modifier.height(20.dp))
