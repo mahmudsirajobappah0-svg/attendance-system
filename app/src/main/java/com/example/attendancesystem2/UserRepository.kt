@@ -2,15 +2,6 @@ package com.example.attendancesystem2
 
 import com.google.firebase.firestore.FirebaseFirestore
 
-data class UserProfile(
-    val uid: String = "",
-    val name: String = "",
-    val email: String = "",
-    val role: String = "student",
-    val deviceId: String = "",
-    val fcmToken: String = ""
-)
-
 object UserRepository {
 
     private val db = FirebaseFirestore.getInstance()
@@ -41,11 +32,7 @@ object UserRepository {
             .addOnFailureListener { e -> onFailure(e.message ?: "Failed to load profile") }
     }
 
-    fun bindDeviceIfEmpty(
-        uid: String,
-        deviceId: String,
-        onDone: () -> Unit
-    ) {
+    fun bindDeviceIfEmpty(uid: String, deviceId: String, onDone: () -> Unit) {
         usersRef.document(uid).update("deviceId", deviceId)
             .addOnSuccessListener { onDone() }
             .addOnFailureListener { onDone() }
@@ -53,5 +40,25 @@ object UserRepository {
 
     fun updateFcmToken(uid: String, token: String) {
         usersRef.document(uid).update("fcmToken", token)
+    }
+
+    fun resetDeviceByMatricNo(
+        matricNo: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        usersRef.whereEqualTo("matricNo", matricNo.trim())
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val doc = snapshot.documents.firstOrNull()
+                if (doc == null) {
+                    onFailure("No account found with that Matric/Staff ID")
+                } else {
+                    doc.reference.update("deviceId", "")
+                        .addOnSuccessListener { onSuccess() }
+                        .addOnFailureListener { e -> onFailure(e.message ?: "Failed to reset device") }
+                }
+            }
+            .addOnFailureListener { e -> onFailure(e.message ?: "Lookup failed") }
     }
 }
