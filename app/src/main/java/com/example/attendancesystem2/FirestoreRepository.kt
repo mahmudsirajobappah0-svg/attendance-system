@@ -2,7 +2,6 @@ package com.example.attendancesystem2
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.Query
 
 object FirestoreRepository {
 
@@ -10,7 +9,6 @@ object FirestoreRepository {
     private val sessionsRef = db.collection("sessions")
     private val attendanceRef = db.collection("attendance")
     private val coursesRef = db.collection("courses")
-    private val usersRef = db.collection("users")
 
     fun createSession(
         course: String,
@@ -33,7 +31,6 @@ object FirestoreRepository {
             expiresAt = now + (durationMinutes * 60_000L),
             active = true
         )
-
         docRef.set(session)
             .addOnSuccessListener { onSuccess(docRef.id) }
             .addOnFailureListener { e -> onFailure(e.message ?: "Failed to create session") }
@@ -63,10 +60,7 @@ object FirestoreRepository {
             .addOnCompleteListener { onDone() }
     }
 
-    fun listenToAttendeeCount(
-        sessionId: String,
-        onUpdate: (Int) -> Unit
-    ): ListenerRegistration {
+    fun listenToAttendeeCount(sessionId: String, onUpdate: (Int) -> Unit): ListenerRegistration {
         return attendanceRef
             .whereEqualTo("sessionId", sessionId)
             .addSnapshotListener { snapshot, _ ->
@@ -95,6 +89,8 @@ object FirestoreRepository {
             .addOnFailureListener { e -> onFailure(e.message ?: "Failed to check attendance") }
     }
 
+    // No orderBy here on purpose — avoids needing a Firestore composite index.
+    // Sorting happens in-app after the data arrives.
     fun getStudentHistory(
         studentId: String,
         onSuccess: (List<AttendanceRecord>) -> Unit,
@@ -102,9 +98,12 @@ object FirestoreRepository {
     ) {
         attendanceRef
             .whereEqualTo("studentId", studentId)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
             .get()
-            .addOnSuccessListener { snapshot -> onSuccess(snapshot.toObjects(AttendanceRecord::class.java)) }
+            .addOnSuccessListener { snapshot ->
+                val records = snapshot.toObjects(AttendanceRecord::class.java)
+                    .sortedByDescending { it.timestamp }
+                onSuccess(records)
+            }
             .addOnFailureListener { e -> onFailure(e.message ?: "Failed to load history") }
     }
 
@@ -119,8 +118,6 @@ object FirestoreRepository {
             .addOnSuccessListener { snapshot -> onSuccess(snapshot.toObjects(AttendanceRecord::class.java)) }
             .addOnFailureListener { e -> onFailure(e.message ?: "Failed to load attendance") }
     }
-
-    // ---- Multi-course support ----
 
     fun addCourse(name: String, lecturerId: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         val docRef = coursesRef.document()
@@ -138,27 +135,5 @@ object FirestoreRepository {
             .get()
             .addOnSuccessListener { snapshot -> onSuccess(snapshot.toObjects(Course::class.java)) }
             .addOnFailureListener { e -> onFailure(e.message ?: "Failed to load courses") }
-    }
-
-    // ---- Admin device reset ----
-
-    fun resetDeviceByEmail(
-        email: String,
-        onSuccess: () -> Unit,
-        onFailure: (String) -> Unit
-    ) {
-        usersRef.whereEqualTo("email", email.trim())
-            .get()
-            .addOnSuccessListener { snapshot ->
-                val doc = snapshot.documents.firstOrNull()
-                if (doc == null) {
-                    onFailure("No account found with that email")
-                } else {
-                    doc.reference.update("deviceId", "")
-                        .addOnSuccessListener { onSuccess() }
-                        .addOnFailureListener { e -> onFailure(e.message ?: "Failed to reset device") }
-                }
-            }
-            .addOnFailureListener { e -> onFailure(e.message ?: "Lookup failed") }
     }
 }
