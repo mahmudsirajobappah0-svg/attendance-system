@@ -39,17 +39,14 @@ object BiometricHelper {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                     onSuccess()
                 }
-
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     onError(errString.toString())
                 }
-
                 override fun onAuthenticationFailed() {
                     onError("Not recognized. Try again.")
                 }
             }
         )
-
         prompt.authenticate(promptInfo)
     }
 }
