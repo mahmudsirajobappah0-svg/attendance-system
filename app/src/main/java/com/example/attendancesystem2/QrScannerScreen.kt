@@ -57,14 +57,20 @@ fun QrScannerScreen(
                     return@getSession
                 }
 
-                status = "Checking your location..."
+                status = "Getting your location..."
 
                 LocationHelper.getCurrentLocation(
                     context = context,
+                    onProgress = { attempt, bestAccuracy ->
+                        status = if (bestAccuracy != null) {
+                            "Getting your location... (accuracy: ${bestAccuracy.toInt()}m)"
+                        } else {
+                            "Getting your location... (attempt $attempt)"
+                        }
+                    },
                     onSuccess = { location ->
                         val withinRange = GPSVerifier.isWithinAllowedDistance(
-                            studentLatitude = location.latitude,
-                            studentLongitude = location.longitude,
+                            studentLocation = location,
                             lecturerLatitude = session.latitude,
                             lecturerLongitude = session.longitude
                         )
