@@ -50,17 +50,12 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
     var message by remember { mutableStateOf("") }
     var hasLocationPermission by remember {
         mutableStateOf(
-            ContextCompat.checkSelfPermission(
-                context, Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         )
     }
 
     var listener by remember { mutableStateOf<ListenerRegistration?>(null) }
-
-    DisposableEffect(Unit) {
-        onDispose { listener?.remove() }
-    }
+    DisposableEffect(Unit) { onDispose { listener?.remove() } }
 
     LaunchedEffect(Unit) {
         FirestoreRepository.getLecturerCourses(
@@ -83,20 +78,14 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
         val bitmap = Bitmap.createBitmap(512, 512, Bitmap.Config.RGB_565)
         for (x in 0 until 512) {
             for (y in 0 until 512) {
-                bitmap.setPixel(
-                    x, y,
-                    if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE
-                )
+                bitmap.setPixel(x, y, if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE)
             }
         }
         qrBitmap = bitmap
     }
 
     fun createSession() {
-        if (selectedCourse.isBlank()) {
-            message = "Please select or add a course"
-            return
-        }
+        if (selectedCourse.isBlank()) { message = "Please select or add a course"; return }
         if (!hasLocationPermission) {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             return
@@ -120,21 +109,12 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
                         sessionEnded = false
                         generateQr(newSessionId)
                         message = "Session active for 15 minutes. Show this QR to students."
-
-                        listener = FirestoreRepository.listenToAttendeeCount(newSessionId) { count ->
-                            attendeeCount = count
-                        }
+                        listener = FirestoreRepository.listenToAttendeeCount(newSessionId) { count -> attendeeCount = count }
                     },
-                    onFailure = { error ->
-                        loading = false
-                        message = error
-                    }
+                    onFailure = { error -> loading = false; message = error }
                 )
             },
-            onFailure = {
-                loading = false
-                message = "Could not get your location. Enable GPS and try again."
-            }
+            onFailure = { loading = false; message = "Could not get your location. Enable GPS and try again." }
         )
     }
 
@@ -158,16 +138,13 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(20.dp))
-
         Text(text = "Create Attendance Session", color = White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-
         Spacer(modifier = Modifier.height(20.dp))
 
         if (qrBitmap == null) {
             if (courses.isNotEmpty()) {
                 Text(text = "Select a course", color = White, fontSize = 15.sp, modifier = Modifier.align(Alignment.Start))
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Column(modifier = Modifier.fillMaxWidth()) {
                     courses.forEach { course ->
                         val isSelected = selectedCourse == course.name
@@ -175,10 +152,7 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 4.dp)
-                                .background(
-                                    if (isSelected) Gold.copy(alpha = 0.15f) else FieldColor,
-                                    RoundedCornerShape(12.dp)
-                                )
+                                .background(if (isSelected) Gold.copy(alpha = 0.15f) else FieldColor, RoundedCornerShape(12.dp))
                                 .padding(14.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -191,12 +165,10 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
                         }
                     }
                 }
-
                 Spacer(modifier = Modifier.height(15.dp))
             }
 
             Text(text = "Or add a new course", color = Gray, fontSize = 13.sp, modifier = Modifier.align(Alignment.Start))
-
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -216,9 +188,7 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
                         unfocusedLabelColor = Gray
                     )
                 )
-
                 Spacer(modifier = Modifier.width(8.dp))
-
                 Button(
                     onClick = {
                         if (newCourseName.isNotBlank()) {
@@ -235,9 +205,7 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Gold, contentColor = Color.Black)
-                ) {
-                    Text("Add")
-                }
+                ) { Text("Add") }
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -267,9 +235,7 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
             Text(text = selectedCourse, color = Gold, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
@@ -287,9 +253,7 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     shape = RoundedCornerShape(14.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF6B6B), contentColor = Color.White)
-                ) {
-                    Text("End Session", fontWeight = FontWeight.Bold)
-                }
+                ) { Text("End Session", fontWeight = FontWeight.Bold) }
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
@@ -297,9 +261,7 @@ fun CreateAttendanceScreen(onBack: () -> Unit) {
                 onClick = { exportCsv() },
                 modifier = Modifier.fillMaxWidth().height(50.dp),
                 shape = RoundedCornerShape(14.dp)
-            ) {
-                Text("Export Attendance (CSV)", color = Gold)
-            }
+            ) { Text("Export Attendance (CSV)", color = Gold) }
         }
 
         Spacer(modifier = Modifier.weight(1f))
