@@ -26,3 +26,13 @@ data class Course(
     val name: String = "",
     val lecturerId: String = ""
 )
+
+data class UserProfile(
+    val uid: String = "",
+    val name: String = "",
+    val matricNo: String = "",
+    val authEmail: String = "", // internal only, never shown to the user
+    val role: String = "student",
+    val deviceId: String = "",
+    val fcmToken: String = ""
+)
