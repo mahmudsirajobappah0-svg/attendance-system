@@ -21,7 +21,6 @@ private val StudentGray = Color(0xFF9BA5B5)
 
 @Composable
 fun StudentDashboard(
-    onLogout: () -> Unit,
     onScanAttendance: () -> Unit,
     onViewHistory: () -> Unit
 ) {
@@ -77,16 +76,5 @@ fun StudentDashboard(
         }
 
         Spacer(modifier = Modifier.weight(1f))
-
-        OutlinedButton(
-            onClick = onLogout,
-            modifier = Modifier.fillMaxWidth().height(55.dp),
-            shape = RoundedCornerShape(18.dp),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = StudentGold)
-        ) {
-            Text(text = "Logout", fontSize = 16.sp, fontWeight = FontWeight.Medium)
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
     }
 }
