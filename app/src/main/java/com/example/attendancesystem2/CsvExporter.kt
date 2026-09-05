@@ -7,7 +7,6 @@ import java.io.File
 import java.io.FileWriter
 
 object CsvExporter {
-
     fun exportAttendance(context: Context, course: String, records: List<AttendanceRecord>) {
         val fileName = "attendance_${course.replace(" ", "_")}_${System.currentTimeMillis()}.csv"
         val file = File(context.cacheDir, fileName)
@@ -20,13 +19,11 @@ object CsvExporter {
         }
 
         val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
-
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/csv"
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-
         context.startActivity(Intent.createChooser(intent, "Export attendance"))
     }
 }
