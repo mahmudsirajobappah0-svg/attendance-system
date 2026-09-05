@@ -1,6 +1,5 @@
 package com.example.attendancesystem2
 
-import android.util.Patterns
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -26,7 +26,9 @@ fun LoginScreen(
     onLoginSuccess: (String) -> Unit,
     onRegisterClick: () -> Unit
 ) {
-    var email by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    var matricNo by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     var loading by remember { mutableStateOf(false) }
@@ -45,11 +47,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF111A2A), background, Color(0xFF080C14))
-                )
-            )
+            .background(Brush.verticalGradient(colors = listOf(Color(0xFF111A2A), background, Color(0xFF080C14))))
             .padding(24.dp)
     ) {
         Column(
@@ -58,11 +56,8 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(text = "ATTENDANCE", color = gold, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-
             Spacer(modifier = Modifier.height(5.dp))
-
             Text(text = "Smart Attendance System", color = gray, fontSize = 14.sp)
-
             Spacer(modifier = Modifier.height(30.dp))
 
             Column(
@@ -73,21 +68,17 @@ fun LoginScreen(
                     .padding(24.dp)
             ) {
                 Text(text = "Welcome Back", color = white, fontSize = 26.sp, fontWeight = FontWeight.Bold)
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(text = "Login to continue", color = gray, fontSize = 14.sp)
-
                 Spacer(modifier = Modifier.height(22.dp))
 
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it; message = "" },
+                    value = matricNo,
+                    onValueChange = { matricNo = it; message = "" },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Email") },
-                    placeholder = { Text("example@gmail.com") },
+                    label = { Text("Matric/Staff ID") },
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
                     shape = RoundedCornerShape(16.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = gold,
@@ -98,9 +89,7 @@ fun LoginScreen(
                         unfocusedTextColor = white,
                         cursorColor = gold,
                         focusedLabelColor = gold,
-                        unfocusedLabelColor = gray,
-                        focusedPlaceholderColor = gray,
-                        unfocusedPlaceholderColor = gray
+                        unfocusedLabelColor = gray
                     )
                 )
 
@@ -111,7 +100,6 @@ fun LoginScreen(
                     onValueChange = { password = it; message = "" },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Password") },
-                    placeholder = { Text("Enter your password") },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
@@ -125,58 +113,30 @@ fun LoginScreen(
                         unfocusedTextColor = white,
                         cursorColor = gold,
                         focusedLabelColor = gold,
-                        unfocusedLabelColor = gray,
-                        focusedPlaceholderColor = gray,
-                        unfocusedPlaceholderColor = gray
+                        unfocusedLabelColor = gray
                     )
                 )
 
-                Spacer(modifier = Modifier.height(15.dp))
-                Text(
-    text = "Forgot password?",
-    color = gold,
-    fontSize = 13.sp,
-    modifier = Modifier
-        .align(Alignment.End)
-        .clickable {
-            if (email.isBlank()) {
-                message = "Enter your email above first, then tap this again"
-                isError = true
-            } else {
-                auth.sendPasswordResetEmail(email.trim())
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            message = "Password reset email sent — check your inbox"
-                            isError = false
-                        } else {
-                            message = task.exception?.message ?: "Failed to send reset email"
-                            isError = true
-                        }
-                    }
-            }
-        }
-)
+                Spacer(modifier = Modifier.height(10.dp))
 
-Spacer(modifier = Modifier.height(15.dp))
+                Text(
+                    text = "Forgot password? Contact your admin to reset your device/account.",
+                    color = gray,
+                    fontSize = 12.sp,
+                    modifier = Modifier.align(Alignment.End)
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
 
                 if (message.isNotEmpty()) {
-                    Text(
-                        text = message,
-                        color = if (isError) Color(0xFFFF6B6B) else Color(0xFF66E08A),
-                        fontSize = 13.sp
-                    )
+                    Text(text = message, color = if (isError) Color(0xFFFF6B6B) else Color(0xFF66E08A), fontSize = 13.sp)
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
                 Button(
                     onClick = {
-                        val cleanEmail = email.trim()
-
-                        if (cleanEmail.isEmpty()) {
-                            message = "Please enter your email"; isError = true; return@Button
-                        }
-                        if (!Patterns.EMAIL_ADDRESS.matcher(cleanEmail).matches()) {
-                            message = "Please enter a valid email address"; isError = true; return@Button
+                        if (matricNo.isBlank()) {
+                            message = "Please enter your Matric/Staff ID"; isError = true; return@Button
                         }
                         if (password.isEmpty()) {
                             message = "Please enter your password"; isError = true; return@Button
@@ -185,7 +145,10 @@ Spacer(modifier = Modifier.height(15.dp))
                         loading = true
                         message = ""
 
-                        auth.signInWithEmailAndPassword(cleanEmail, password)
+                        val authEmail = AuthIdentifierUtils.buildAuthEmail(matricNo)
+                        val currentDeviceId = DeviceUtils.getDeviceId(context)
+
+                        auth.signInWithEmailAndPassword(authEmail, password)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     val uid = auth.currentUser?.uid ?: ""
@@ -193,22 +156,34 @@ Spacer(modifier = Modifier.height(15.dp))
                                     UserRepository.getProfile(
                                         uid = uid,
                                         onSuccess = { profile ->
-                                            loading = false
-                                            isError = false
-                                            message = "Login successful!"
-                                            onLoginSuccess(profile.role)
+                                            when {
+                                                profile.deviceId.isEmpty() -> {
+                                                    UserRepository.bindDeviceIfEmpty(uid, currentDeviceId) {
+                                                        loading = false; isError = false
+                                                        message = "Login successful!"
+                                                        onLoginSuccess(profile.role)
+                                                    }
+                                                }
+                                                profile.deviceId == currentDeviceId -> {
+                                                    loading = false; isError = false
+                                                    message = "Login successful!"
+                                                    onLoginSuccess(profile.role)
+                                                }
+                                                else -> {
+                                                    auth.signOut()
+                                                    loading = false; isError = true
+                                                    message = "This account is linked to another device. Contact an admin to reset it."
+                                                }
+                                            }
                                         },
                                         onFailure = { error ->
-                                            loading = false
-                                            isError = true
+                                            loading = false; isError = true
                                             message = "Could not load your profile: $error"
                                         }
                                     )
                                 } else {
-                                    loading = false
-                                    isError = true
-                                    message = "LOGIN FAILED: " +
-                                        (task.exception?.localizedMessage ?: "Unknown error")
+                                    loading = false; isError = true
+                                    message = "LOGIN FAILED: " + (task.exception?.localizedMessage ?: "Unknown error")
                                 }
                             }
                     },
@@ -218,11 +193,7 @@ Spacer(modifier = Modifier.height(15.dp))
                     colors = ButtonDefaults.buttonColors(containerColor = gold, contentColor = Color(0xFF101722))
                 ) {
                     if (loading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(28.dp),
-                            color = Color(0xFF101722),
-                            strokeWidth = 3.dp
-                        )
+                        CircularProgressIndicator(modifier = Modifier.size(28.dp), color = Color(0xFF101722), strokeWidth = 3.dp)
                     } else {
                         Text(text = "Login", fontSize = 17.sp, fontWeight = FontWeight.Bold)
                     }
