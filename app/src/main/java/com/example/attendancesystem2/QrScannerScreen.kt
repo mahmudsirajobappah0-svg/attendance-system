@@ -62,11 +62,8 @@ fun QrScannerScreen(
                 LocationHelper.getCurrentLocation(
                     context = context,
                     onProgress = { attempt, bestAccuracy ->
-                        status = if (bestAccuracy != null) {
-                            "Getting your location... (accuracy: ${bestAccuracy.toInt()}m)"
-                        } else {
-                            "Getting your location... (attempt $attempt)"
-                        }
+                        status = if (bestAccuracy != null) "Getting your location... (accuracy: ${bestAccuracy.toInt()}m)"
+                        else "Getting your location... (attempt $attempt)"
                     },
                     onSuccess = { location ->
                         val withinRange = GPSVerifier.isWithinAllowedDistance(
@@ -99,10 +96,7 @@ fun QrScannerScreen(
                                 status = "Attendance marked successfully!"
                                 onAttendanceMarked()
                             },
-                            onFailure = { error ->
-                                loading = false; isError = true
-                                status = error
-                            }
+                            onFailure = { error -> loading = false; isError = true; status = error }
                         )
                     },
                     onFailure = {
@@ -111,20 +105,14 @@ fun QrScannerScreen(
                     }
                 )
             },
-            onFailure = { error ->
-                loading = false; isError = true
-                status = error
-            }
+            onFailure = { error -> loading = false; isError = true; status = error }
         )
     }
 
     val scanLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
         val sessionId = result.contents
-        if (sessionId == null) {
-            status = "Scan cancelled"; isError = true
-        } else {
-            proceedWithScan(sessionId)
-        }
+        if (sessionId == null) { status = "Scan cancelled"; isError = true }
+        else proceedWithScan(sessionId)
     }
 
     fun launchScanner() {
@@ -157,17 +145,10 @@ fun QrScannerScreen(
             activity = activity,
             onSuccess = {
                 status = "Opening camera..."
-                val hasCameraPermission = ContextCompat.checkSelfPermission(
-                    context, Manifest.permission.CAMERA
-                ) == PackageManager.PERMISSION_GRANTED
-
-                if (hasCameraPermission) launchScanner()
-                else cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                val hasCameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                if (hasCameraPermission) launchScanner() else cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
             },
-            onError = { error ->
-                loading = false; isError = true
-                status = "Verification failed: $error"
-            }
+            onError = { error -> loading = false; isError = true; status = "Verification failed: $error" }
         )
     }
 
@@ -183,22 +164,15 @@ fun QrScannerScreen(
             uid = uid,
             onSuccess = { profile ->
                 when {
-                    profile.deviceId.isEmpty() -> {
-                        UserRepository.bindDeviceIfEmpty(uid, currentDeviceId) {
-                            proceedToBiometric()
-                        }
-                    }
+                    profile.deviceId.isEmpty() -> UserRepository.bindDeviceIfEmpty(uid, currentDeviceId) { proceedToBiometric() }
                     profile.deviceId == currentDeviceId -> proceedToBiometric()
                     else -> {
                         loading = false; isError = true
-                        status = "This account is linked to another device. Attendance can only be marked from your registered device."
+                        status = "This account is linked to another device. Contact an admin to reset it."
                     }
                 }
             },
-            onFailure = { error ->
-                loading = false; isError = true
-                status = error
-            }
+            onFailure = { error -> loading = false; isError = true; status = error }
         )
     }
 
@@ -207,13 +181,9 @@ fun QrScannerScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(40.dp))
-
         Text(text = "Scan Attendance", color = ScannerWhite, fontSize = 28.sp, fontWeight = FontWeight.Bold)
-
         Spacer(modifier = Modifier.height(10.dp))
-
         Text(text = "Point your camera at the lecturer's QR code", color = ScannerGray, fontSize = 14.sp)
-
         Spacer(modifier = Modifier.height(60.dp))
 
         Box(
@@ -226,12 +196,7 @@ fun QrScannerScreen(
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        Text(
-            text = status,
-            color = if (isError) Color(0xFFFF6B6B) else ScannerGold,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Text(text = status, color = if (isError) Color(0xFFFF6B6B) else ScannerGold, fontSize = 14.sp, fontWeight = FontWeight.Bold)
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -240,9 +205,7 @@ fun QrScannerScreen(
             enabled = !loading,
             modifier = Modifier.fillMaxWidth().height(58.dp),
             colors = ButtonDefaults.buttonColors(containerColor = ScannerGold, contentColor = Color.Black)
-        ) {
-            Text(text = "Start Scanning", fontWeight = FontWeight.Bold)
-        }
+        ) { Text(text = "Start Scanning", fontWeight = FontWeight.Bold) }
 
         Spacer(modifier = Modifier.height(12.dp))
 
